@@ -1,19 +1,23 @@
 const Product = require("../models").Product;
 const ProductGallery = require("../models").Product_Gallery;
 const { v4: uuidv4 } = require('uuid');
+const { validationResult } = require('express-validator')
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 
 class ProductController {
   // Create Product
   // Input: name, price, description, file_images
   static async createProduct(req, res) {
     try {
+      const errors = validationResult(req)
       const { name, price, description } = req.body;
-      if (!name || !price || !description) {
-        return res.status(400).json({
-          message: "Please fill all required fields"
-        });
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          errors: errors.array()
+        })
       }
-      // // Get file_images from req.files
       const file_images = req.files.file_images;
       if (!file_images) {
         return res.status(400).json({
@@ -31,13 +35,24 @@ class ProductController {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
-      
-      // Save to public/images
+
+      // Upload to Cloudinary
       const images = [];
       for (let i = 0; i < file_images.length; i++) {
         const name = `${uuidv4()}-${product.name}-${i}-${file_images[i].name}`;
-        images.push(`/images/${name}`);
-        file_images[i].mv(`public/images/${name}`);
+        file_images[i].mv(name);
+
+        const output = await cloudinary.uploader.upload(name, {
+          folder: "product",
+          use_filename: true,
+          unique_filename: true,
+          overwrite: true,
+        });
+
+        // Delete file from local
+        fs.unlinkSync(name);
+
+        images.push(output.url);
       }
 
       const product_id = product.id;

@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 // Import the controllers or other
 const ProductController = require("../../../app/controllers/product.controller");
+const productValidator  = require('../../../app/requests/product.validator')
 
 // Implement the routes here
 router.get("/", (req, res) => {
@@ -9,7 +10,7 @@ router.get("/", (req, res) => {
 });
 
 // Management Product
-router.post("/product", ProductController.createProduct);
+router.post("/product", productValidator, ProductController.createProduct);
 router.get("/product", ProductController.getAllProduct);
 router.put("/product/:id", ProductController.updateProduct);
 router.delete("/product/:id", ProductController.deleteProduct);
