@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       }),
 
-      this.belongsTo(models.offer, {
+      this.belongsTo(models.Offer, {
         foreignKey: {
           name: 'id_offer'
         }
