@@ -17,12 +17,12 @@ module.exports = (sequelize, DataTypes) => {
         }
       }),
 
-      this.belongsTo(models.offer, {
+      this.belongsTo(models.Offer, {
         foreignKey: {
           name: 'id_offer'
         }
       })
-    }
+    } 
   }
   History.init({
     id_user: DataTypes.INTEGER,
