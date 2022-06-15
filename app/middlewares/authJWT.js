@@ -6,7 +6,7 @@ const authJWT = (req, res, next) => {
 
   if (authHeader){
     const token = authHeader.split(' ')[1];
-    const secretKey = process.env.SECRET_KEY;
+    const secretKey = process.env.JWT_SIGNATURE_KEY;
     jwt.verify(token, secretKey, (err, user) => {
       if(err){
         return res.status(403).json({
