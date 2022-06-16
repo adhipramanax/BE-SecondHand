@@ -12,49 +12,6 @@ const responseFormatter = require('../helpers/responseFormatter');
 class ProductController {
   // Create Product
   static async createProduct(req, res) {
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "create-product"
-      #swagger.summary = "Create new product"
-      #swagger.description = "This endpoint allows you to create a new product for your store"
-      #swagger.security = [{ "bearerAuth": [] }]
-      #swagger.requestBody = {
-        required: true,
-        content: {
-          "multipart/form-data": {
-            schema: {
-              type: "object",
-              properties: {
-                name: {
-                  type: "string",
-                  example: "string",
-                  required: true,
-                },
-                price: {
-                  type: "number",
-                  example: 10000,
-                  required: true,
-                },
-                description: {
-                  type: "string",
-                  example: "string",
-                  required: true,
-                },
-                id_categorys: {
-                  type: "string",
-                  example: "1,2,3",
-                  required: true,
-                },
-                file_images: {
-                  type: "file",
-                  required: true,
-                }
-              }
-            }
-          }
-        }
-      }
-    */
     try {
       const errors = validationResult(req)
       const { name, price, description, id_categorys } = req.body;
@@ -71,24 +28,6 @@ class ProductController {
       }
 
       if (!file_images) {
-        /*
-          #swagger.response[400] = {
-            description: "Bad Request",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    message: {
-                      type: "string",
-                      example: "Please upload file_images",
-                    },
-                  },
-                },
-              },
-            },
-          }
-        */
         return res.status(400).json(responseFormatter.error(null, "Please upload at least one image",res.statusCode));
       }
 
@@ -137,24 +76,6 @@ class ProductController {
       
       // Check if split_id_categorys is more than 5
       if (split_id_categorys.length > 5) {
-        /*
-          #swagger.response[400] = {
-            description: "Bad Request",
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
-                    message: {
-                      type: "string",
-                      example: "You can only choose 5 categorys",
-                    },
-                  },
-                },
-              },
-            },
-          }
-        */
         return res.status(400).json(responseFormatter.error(null, "You can only choose 5 categorys",res.statusCode));
       }
 
@@ -166,31 +87,6 @@ class ProductController {
           updatedAt: new Date(),
         });
       });
-
-      /*
-        #swagger.responses[201] = {
-          description: "Product created",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product created",
-                  },
-                  product: {
-                    type: "object",
-                  },
-                  product_gallery: {
-                    type: "object",
-                  },
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(201).json(responseFormatter.success({product,product_gallery}, "Product created",res.statusCode));
     } catch (error) {
       console.log(error);
@@ -212,60 +108,6 @@ class ProductController {
         id_categorys: "1,2,3",
         images_deleted: "1,2",
         file_images: Form-Data Object // if not exist, dont upload image
-      }
-    */
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "update-product"
-      #swagger.summary = "Update product"
-      #swagger.description = "This endpoint allows you to update a product"
-      #swagger.security = [{ "bearerAuth": [] }]
-      #swagger.requestBody = {
-        required: true,
-        content: {
-          "multipart/form-data": {
-            schema: {
-              type: "object",
-              properties: {
-                name: {
-                  type: "string",
-                  example: "string",
-                  required: true,
-                },
-                price: {
-                  type: "number",
-                  example: 10000,
-                  required: true,
-                },
-                description: {
-                  type: "string",
-                  example: "string",
-                  required: true,
-                },
-                id_categorys: {
-                  type: "string",
-                  example: "1,2,3",
-                  required: true,
-                },
-                images_deleted: {
-                  type: "string",
-                  example: "1,2",
-                  required: true,
-                },
-                file_images: {
-                  type: "file",
-                }
-              }
-            }
-          }
-        }
-      }
-      #swagger.parameters['id'] = {
-        in: "path",
-        name: "id",
-        description: "Product ID",
-        required: true,
-        type: "integer",
       }
     */
     try {
@@ -373,27 +215,6 @@ class ProductController {
           }
         });
       }
-      /*
-        #swagger.responses[204] = {
-          description: "Product updated successfully",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product updated successfully",
-                  },
-                  product: {
-                    type: "object",
-                  }
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(204).json(responseFormatter.success(product, "Product updated successfully",res.statusCode));
     } catch (error) {
       console.log(error);
@@ -403,19 +224,6 @@ class ProductController {
 
   // get product by id
   static async getProductById(req, res) {
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "get-product-by-id"
-      #swagger.summary = "Get product by id"
-      #swagger.description = "This endpoint allows you to get a product by id"
-      #swagger.parameters['id'] = {
-        in: "path",
-        name: "id",
-        description: "Product ID",
-        required: true,
-        type: "integer",
-      }
-    */
     try {
       const { id } = req.params;
       const product = await Product.findOne({
@@ -424,27 +232,6 @@ class ProductController {
       if (!product) {
         return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
       }
-      /*
-        #swagger.responses[200] = {
-          description: "Product found",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product found",
-                  },
-                  product: {
-                    type: "object",
-                  }
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(200).json(responseFormatter.success(product, "Product found",res.statusCode));
     } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message,res.statusCode)); 
@@ -452,39 +239,11 @@ class ProductController {
   }
   // get all product
   static async getAllProduct(req, res) {
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "get-all-product"
-      #swagger.summary = "Get all product"
-      #swagger.description = "This endpoint allows you to get all product"
-    */
     try {
       const products = await Product.findAll();
       if (!products) {
         return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
       }
-
-      /*
-        #swagger.responses[200] = {
-          description: "Product found",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product found",
-                  },
-                  products: {
-                    type: "array",
-                  }
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
     } catch (error) {
       return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
@@ -494,21 +253,6 @@ class ProductController {
   // get product by status_product
   static async getProductByStatus(req, res) {
       
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "get-product-by-status"
-      #swagger.summary = "Get product by status"
-      #swagger.description = "This endpoint allows you to get a product by status"
-      #swagger.security = [{ "bearerAuth": [] }]
-      #swagger.parameters['status'] = {
-        in: "path",
-        name: "status",
-        description: "Product status",
-        example: 0,
-        required: true,
-        type: "integer",
-      }
-    */
     try {
       const { id_user, status: status_product } = req.query;
       const products = await Product.findAll({
@@ -522,28 +266,6 @@ class ProductController {
       if (!products) {
         return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
       }
-
-      /*
-        #swagger.responses[200] = {
-          description: "Product found",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product found",
-                  },
-                  products: {
-                    type: "array",
-                  }
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
     } catch (error) {
       console.log(error);
@@ -553,41 +275,6 @@ class ProductController {
 
   // update status_sell or status_product of product
   static async updateStatus(req, res) {
-
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "update-status"
-      #swagger.summary = "Update status"
-      #swagger.description = "This endpoint allows you to update status of product. Only change status_sell or status_product. If you want to change status_sell and status_product, it will change both status_sell and status_product"
-      #swagger.security = [{ "bearerAuth": [] }]
-      #swagger.parameters['id'] = {
-        in: "path",
-        name: "id",
-        description: "Product ID",
-        required: true,
-        type: "integer",
-      }
-      #swagger.requestBody = {
-        description: "Product status",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                status_sell: {
-                  type: "integer",
-                  example: true,
-                },
-                status_product: {
-                  type: "integer",
-                  example: false,
-                }
-              }
-            }
-          }
-        }
-      }
-    */
 
     try {
       const { id } = req.params;
@@ -626,28 +313,6 @@ class ProductController {
         status_product,
         updatedAt: new Date(),
       });
-
-      /*
-        #swagger.responses[200] = {
-          description: "Product updated",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product updated",
-                  },
-                  product: {
-                    type: "object",
-                  }
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(200).json(responseFormatter.success(product, "Product updated successfully",res.statusCode));
     } catch (error) {
       console.log(error);
@@ -657,20 +322,6 @@ class ProductController {
 
   // delete product by id
   static async deleteProduct(req, res) {
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "delete-product"
-      #swagger.summary = "Delete product"
-      #swagger.description = "This endpoint allows you to delete a product"
-      #swagger.security = [{ "bearerAuth": [] }]
-      #swagger.parameters['id'] = {
-        in: "path",
-        name: "id",
-        description: "Product ID",
-        required: true,
-        type: "integer",
-      }
-    */
     try {
       const { id } = req.params;
       const product = await Product.findOne({
@@ -700,19 +351,6 @@ class ProductController {
 
   // Search product by name
   static async searchProductByName(req, res) {
-    /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "search-product-by-name"
-      #swagger.summary = "Search product by name"
-      #swagger.description = "This endpoint allows you to search product by name"
-      #swagger.parameters['name'] = {
-        in: "path",
-        name: "name",
-        description: "Product name",
-        required: true,
-        type: "string",
-      }
-      */
     try {
       const { name } = req.params;
       const products = await Product.findAll({
@@ -723,28 +361,6 @@ class ProductController {
       if (products.length === 0) {
         return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
       }
-
-      /*
-        #swagger.responses[200] = {
-          description: "Product found",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  message: {
-                    type: "string",
-                    example: "Product found",
-                  },
-                  products: {
-                    type: "array",
-                  }
-                }
-              }
-            }
-          }
-        }
-      */
       return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
     } catch (error) {
       console.log(error);
@@ -754,29 +370,6 @@ class ProductController {
 
   // Filter by category
   static async filterByCategory(req, res) {
-    /*
-      params = {
-        categories: "1,2",
-      }
-
-      return all product with category in category
-    */
-   /*
-      #swagger.tags = ['Product']
-      #swagger.operationId = "filter-by-category"
-      #swagger.summary = "Filter by category"
-      #swagger.description = "This endpoint allows you to filter product by category"
-
-      #swagger.parameters['categories'] = {
-        in: "path",
-        name: "categories",
-        description: "Category ID",
-        required: true,
-        type: "string",
-      }
-
-      
-   */
 
     try {
       const { categories } = req.params;
@@ -793,27 +386,6 @@ class ProductController {
       if (products.length === 0) {
         return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
       }
-      /*
-      #swagger.responses[200] = {
-        description: "Product found",
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                message: {
-                  type: "string",
-                  example: "Product found",
-                },
-                products: {
-                  type: "array",
-                }
-              }
-            }
-          }
-        }
-      } 
-      */
       return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
 
     } catch (error) {
