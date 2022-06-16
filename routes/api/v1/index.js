@@ -14,11 +14,11 @@ router.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-
 // Implement the routes here
 router.post('/auth/login', login, authenticationController.login);
 router.post('/auth/register', register, authenticationController.register);
 
+// management offer
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
 
@@ -27,5 +27,11 @@ router.post("/product", [ authJWT, productValidator ], ProductController.createP
 router.get("/product", ProductController.getAllProduct);
 router.put("/product/:id", [ authJWT ], ProductController.updateProduct);
 router.get("/product/:id", ProductController.getProductById);
+router.get("/product/status_product/:status", [ authJWT ], ProductController.getProductByStatus);
+router.put("/product/status/:id", [ authJWT ], ProductController.updateStatus);
+router.delete("/product/:id", [ authJWT ], ProductController.deleteProduct);
+
+router.get("/product/search/:name", ProductController.searchProductByName);
+router.get("/product/filter/:categories", ProductController.filterByCategory);
 
 module.exports = router;

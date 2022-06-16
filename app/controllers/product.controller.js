@@ -1,6 +1,8 @@
 const Product = require("../models").Product;
 const ProductGallery = require("../models").Product_Gallery;
 const DetailProduct = require("../models").Detail_Product;
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator')
 const cloudinary = require('cloudinary').v2;
@@ -247,7 +249,6 @@ class ProductController {
     }
   }
 
-
   // get product by id
   static async getProductById(req, res) {
     try {
@@ -292,6 +293,207 @@ class ProductController {
     }
   }
 
+  // get product by status_product
+  static async getProductByStatus(req, res) {
+    /*
+      params = {
+        status: 0, // 0 = false, 1 = true
+      }
+
+      return all product with status_product = true
+    */
+    try {
+      const { status: status_product } = req.params;
+      const products = await Product.findAll({
+        where: { status_product },
+      });
+
+      if (!products) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Product found",
+        products,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+
+  // update status_sell or status_product of product
+  static async updateStatus(req, res) {
+    /*
+      params = {
+        id: 1,
+      }
+
+      body = {
+        status_sell: 0, // 0 = false, 1 = true
+        status_product: 0, // 0 = false, 1 = true
+      }
+    */
+
+    try {
+      const { id } = req.params;
+      let { status_sell, status_product } = req.body;
+
+      // Check if status_sell or status_product is undefined
+      if (status_sell === undefined && status_product === undefined) {
+        return res.status(400).json({
+          message: "Status_sell and status_product is undefined",
+        });
+      }
+
+      const product = await Product.findOne({
+        where: { id },
+      });
+
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      // Check if status_sell or status_product is not undefined
+      if (status_sell === undefined) {
+        status_sell = product.status_sell;
+      }
+
+      if (status_product === undefined) {
+        status_product = product.status_product;
+      }
+
+      // Check if user is owner of product
+      if (product.id_user !== req.user.id) {  
+        return res.status(403).send("You are not authorized to access this resource");
+      }
+
+
+      await product.update({
+        status_sell,
+        status_product,
+        updatedAt: new Date(),
+      });
+
+      return res.status(200).json({
+        message: "Product updated successfully",
+        product,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+
+  // delete product by id
+  static async deleteProduct(req, res) {
+    try {
+      const { id } = req.params;
+      const product = await Product.findOne({
+        where: { id },
+      });
+
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      // Check if user is owner of product
+      if (product.id_user !== req.user.id) {
+        return res.status(403).send("You are not authorized to access this resource");
+      }
+
+      await product.destroy();
+      return res.status(200).json({
+        message: "Product deleted successfully",
+      });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+
+
+  //////////////////////////////////////////////////// BUYER ////////////////////////////////////////////////////////
+
+  // Search product by name
+  static async searchProductByName(req, res) {
+    try {
+      const { name } = req.params;
+      const products = await Product.findAll({
+        where: { name: { [Op.iLike]: `%${name}%` } },
+      });
+
+      // Check if products is empty array
+      if (products.length === 0) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Product found",
+        products,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
+
+  // Filter by category
+  static async filterByCategory(req, res) {
+    /*
+      params = {
+        categories: "1,2",
+      }
+
+      return all product with category in category
+    */
+
+    try {
+      const { categories } = req.params;
+
+      const product_ids = await DetailProduct.findAll({
+        attributes: ["id_product"],
+        where: { id_category: { [Op.in]: categories.split(",") } },
+      });
+
+      const products = await Product.findAll({
+        where: { id: { [Op.in]: product_ids.map((product) => product.id_product) } },
+      });
+
+      if (products.length === 0) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      return res.status(200).json({
+        message: "Product found",
+        products,
+      });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "Internal server error",
+      });
+    }
+  }
 
 }
 module.exports = ProductController;

@@ -7,7 +7,8 @@
     "develop": "nodemon ./bin/www",
     "db:create": "sequelize db:create",
     "db:migrate": "sequelize db:migrate",
-    "db:seed": "sequelize db:seed:all"
+    "db:seed": "sequelize db:seed:all",
+    "swagger:generate": "node ./docs/swagger.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -25,6 +26,7 @@
     "multer": "^1.4.5-lts.1",
     "pg": "^8.7.3",
     "sequelize": "^6.20.1",
+    "swagger-autogen": "^2.21.3",
     "swagger-ui-express": "^4.4.0",
     "uuid": "^8.3.2"
   },

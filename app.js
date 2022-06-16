@@ -4,6 +4,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 const fileUpload = require('express-fileupload');
+const swaggerUi = require('swagger-ui-express');
 
 var apiRouter = require('./routes/');
 
@@ -16,6 +17,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(require('./swagger.json')));
 
 app.use('/', apiRouter);
 
