@@ -27,11 +27,12 @@ router.post("/product", [ authJWT, productValidator ], ProductController.createP
 router.get("/product", ProductController.getAllProduct);
 router.put("/product/:id", [ authJWT ], ProductController.updateProduct);
 router.get("/product/:id", ProductController.getProductById);
-router.get("/product/status_product/:status", [ authJWT ], ProductController.getProductByStatus);
 router.put("/product/status/:id", [ authJWT ], ProductController.updateStatus);
 router.delete("/product/:id", [ authJWT ], ProductController.deleteProduct);
-
 router.get("/product/search/:name", ProductController.searchProductByName);
 router.get("/product/filter/:categories", ProductController.filterByCategory);
+
+// product by seller
+router.get("/seller/product", [ authJWT ], ProductController.getProductByStatus);
 
 module.exports = router;

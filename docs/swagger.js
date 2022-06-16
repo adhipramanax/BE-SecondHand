@@ -10,21 +10,21 @@ const doc = {
     },
     servers: [
         {
-            url: 'http://localhost:3000',
+            url: 'http://localhost:8080/api/v1',
             description: 'Localhost',
         },
     ],
     securityDefinitions: {
-        Bearer: {
-            type: 'apiKey',
-            name: 'Authorization',
-            in: 'header',
+        bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
         },
     },
 }
 
 const output = './swagger.json';
-const enpoints = [ 'app.js' ];
+const enpoints = [ 'routes/api/v1/index.js' ];
 
 swaggerAutogen(output, enpoints, doc).then(() => {
     console.log('Swagger file generated');

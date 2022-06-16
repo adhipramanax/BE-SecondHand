@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:8080/api/v1",
       "description": "Localhost"
     }
   ],
   "paths": {
-    "/api/v1/": {
+    "/": {
       "get": {
         "description": "",
         "parameters": [],
@@ -23,28 +23,91 @@
         }
       }
     },
-    "/api/v1/auth/login": {
+    "/auth/login": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "example": "any"
+                  },
+                  "name": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/offer": {
       "post": {
         "description": "",
         "parameters": [],
         "responses": {}
       }
     },
-    "/api/v1/auth/register": {
-      "post": {
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      }
-    },
-    "/api/v1/offer": {
-      "post": {
-        "description": "",
-        "parameters": [],
-        "responses": {}
-      }
-    },
-    "/api/v1/offer/{id}": {
+    "/offer/{id}": {
       "put": {
         "description": "",
         "parameters": [
@@ -60,21 +123,135 @@
         "responses": {}
       }
     },
-    "/api/v1/product": {
+    "/product": {
       "post": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Create new product",
+        "description": "This endpoint allows you to create a new product for your store",
+        "operationId": "create-product",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "201": {
+            "description": "Product created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product created"
+                    },
+                    "product": {
+                      "type": "object"
+                    },
+                    "product_gallery": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "string",
+                    "required": true
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 10000,
+                    "required": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "string",
+                    "required": true
+                  },
+                  "id_categorys": {
+                    "type": "string",
+                    "example": "1,2,3",
+                    "required": true
+                  },
+                  "file_images": {
+                    "type": "file",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Get all product",
+        "description": "This endpoint allows you to get all product",
+        "operationId": "get-all-product",
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product found"
+                    },
+                    "products": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
-    "/api/v1/product/{id}": {
+    "/product/{id}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Update product",
+        "description": "This endpoint allows you to update a product",
+        "operationId": "update-product",
         "parameters": [
           {
             "name": "id",
@@ -82,13 +259,96 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product ID"
           }
         ],
-        "responses": {}
+        "responses": {
+          "204": {
+            "description": "Product updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product updated successfully"
+                    },
+                    "product": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "string",
+                    "required": true
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 10000,
+                    "required": true
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "string",
+                    "required": true
+                  },
+                  "id_categorys": {
+                    "type": "string",
+                    "example": "1,2,3",
+                    "required": true
+                  },
+                  "images_deleted": {
+                    "type": "string",
+                    "example": "1,2",
+                    "required": true
+                  },
+                  "file_images": {
+                    "type": "file"
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Get product by id",
+        "description": "This endpoint allows you to get a product by id",
+        "operationId": "get-product-by-id",
         "parameters": [
           {
             "name": "id",
@@ -96,13 +356,45 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product ID"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product found"
+                    },
+                    "product": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Delete product",
+        "description": "This endpoint allows you to delete a product",
+        "operationId": "delete-product",
         "parameters": [
           {
             "name": "id",
@@ -110,15 +402,39 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product ID"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/api/v1/product/status_product/{status}": {
+    "/product/status_product/{status}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Get product by status",
+        "description": "This endpoint allows you to get a product by status",
+        "operationId": "get-product-by-status",
         "parameters": [
           {
             "name": "status",
@@ -126,15 +442,53 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product status",
+            "example": 0
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product found"
+                    },
+                    "products": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/api/v1/product/status/{id}": {
+    "/product/status/{id}": {
       "put": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Update status",
+        "description": "This endpoint allows you to update status of product. Only change status_sell or status_product. If you want to change status_sell and status_product, it will change both status_sell and status_product",
+        "operationId": "update-status",
         "parameters": [
           {
             "name": "id",
@@ -142,15 +496,78 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product ID"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Product updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product updated"
+                    },
+                    "product": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Product status",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status_sell": {
+                    "type": "integer",
+                    "example": true
+                  },
+                  "status_product": {
+                    "type": "integer",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
-    "/api/v1/product/search/{name}": {
+    "/product/search/{name}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Search product by name",
+        "description": "This endpoint allows you to search product by name",
+        "operationId": "search-product-by-name",
         "parameters": [
           {
             "name": "name",
@@ -158,15 +575,47 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Product name"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product found"
+                    },
+                    "products": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
-    "/api/v1/product/filter/{categories}": {
+    "/product/filter/{categories}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Product"
+        ],
+        "summary": "Filter by category",
+        "description": "This endpoint allows you to filter product by category",
+        "operationId": "filter-by-category",
         "parameters": [
           {
             "name": "categories",
@@ -174,19 +623,46 @@
             "required": true,
             "schema": {
               "type": "string"
-            }
+            },
+            "description": "Category ID"
           }
         ],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Product found"
+                    },
+                    "products": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     }
   },
   "components": {
     "securitySchemes": {
-      "Bearer": {
-        "type": "apiKey",
-        "name": "Authorization",
-        "in": "header"
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
