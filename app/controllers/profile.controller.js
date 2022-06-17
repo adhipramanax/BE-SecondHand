@@ -4,14 +4,6 @@ const responseFormatter = require('../helpers/responseFormatter')
 
 // get all user use class
 class profilController {
-    static async getAll(req, res) {
-        try {
-            const user = await User.findAll()
-            res.status(200).json(responseFormatter.success(user, 'User berhasil ditampilkan!', res.statusCode))
-        } catch (error) {
-            res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
-        }
-    }
 
     static async updateuser(req, res) {
         try {

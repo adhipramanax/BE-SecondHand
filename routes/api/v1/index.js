@@ -17,7 +17,6 @@ router.post('/offer', [authJWT, create], offerController.offerUser)
 router.put('/offer/:id', [authJWT], offerController.updateStatus)
 
 //profil user
-router.get('/profile', [authJWT], profilController.getAll)
 router.put('/profile/:id', [authJWT], profilController.updateuser)
 
 
