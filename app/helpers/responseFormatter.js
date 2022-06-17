@@ -28,4 +28,3 @@ class responseFormatter{
 }
 
 module.exports = responseFormatter;
-  
