@@ -1,24 +1,24 @@
-const Product = require("../models").Product;
-const ProductGallery = require("../models").Product_Gallery;
-const DetailProduct = require("../models").Detail_Product;
-const Sequelize = require('sequelize');
+const { Product, Product_Gallery, Detail_Product, Category, User, Offer } = require("../models");
+const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const { v4: uuidv4 } = require('uuid');
-const { validationResult } = require('express-validator')
-const cloudinary = require('cloudinary').v2;
-const fs = require('fs');
-const responseFormatter = require('../helpers/responseFormatter');
+const { v4: uuidv4 } = require("uuid");
+const { validationResult } = require("express-validator");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
+const responseFormatter = require("../helpers/responseFormatter");
 
 class ProductController {
   // Create Product
-  static async createProduct(req, res) {
+  static createProduct = async (req, res) => {
     try {
-      const errors = validationResult(req)
-      const { name, price, description, id_categorys } = req.body;
+      const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-        return res.status(422).json(responseFormatter.error(null, errors.array(),res.statusCode));
+        res.status(422).json(responseFormatter.error(null, errors.array(), res.statusCode));
+        return;
       }
+
+      const { name, price, description, id_categorys } = req.body;
 
       let file_images = req.files.file_images;
 
@@ -28,7 +28,8 @@ class ProductController {
       }
 
       if (!file_images) {
-        return res.status(400).json(responseFormatter.error(null, "Please upload at least one image",res.statusCode));
+        res.status(400).json(responseFormatter.error(null, "Please upload at least one image", res.statusCode));
+        return;
       }
 
       const product = await Product.create({
@@ -62,7 +63,7 @@ class ProductController {
       }
 
       const product_id = product.id;
-      const product_gallery = await ProductGallery.bulkCreate(
+      const product_gallery = await Product_Gallery.bulkCreate(
         images.map((image) => ({
           url_photo: image,
           id_product: product_id,
@@ -73,29 +74,32 @@ class ProductController {
 
       // Create Detail Product
       const split_id_categorys = id_categorys.split(",");
-      
+
       // Check if split_id_categorys is more than 5
       if (split_id_categorys.length > 5) {
-        return res.status(400).json(responseFormatter.error(null, "You can only choose 5 categorys",res.statusCode));
+        res.status(400).json(responseFormatter.error(null, "You can only choose 5 categorys", res.statusCode));
+        return;
       }
 
       split_id_categorys.forEach(async (id_category) => {
-        await DetailProduct.create({
+        await Detail_Product.create({
           id_product: product_id,
           id_category: parseInt(id_category),
           createdAt: new Date(),
           updatedAt: new Date(),
         });
       });
-      return res.status(201).json(responseFormatter.success({product,product_gallery}, "Product created",res.statusCode));
+      return res
+        .status(201)
+        .json(responseFormatter.success({ product, product_gallery }, "Product created", res.statusCode));
     } catch (error) {
       console.log(error);
-      return res.status(500).json(responseFormatter.error(null, error.message,res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
-  }
+  };
 
   // update product
-  static async updateProduct(req, res) {
+  static updateProduct = async (req, res) => {
     /*
       params = {
         id: 1,
@@ -117,21 +121,23 @@ class ProductController {
       // Find product by id and check if user is owner of product
       const product = await Product.findOne({
         where: {
-          id
+          id,
         },
       });
 
       if (!product) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
       }
 
       // Check if user is owner of product
       if (product.id_user !== req.user.id) {
-        return res.status(403).send("You are not authorized to access this resource");
+        res.status(403).send("You are not authorized to access this resource");
+        return;
       }
 
       // Get id categorys for this product and delete all
-      const id_categorys_product = await DetailProduct.findAll({
+      const id_categorys_product = await Detail_Product.findAll({
         where: { id_product: product.id },
       });
 
@@ -151,11 +157,12 @@ class ProductController {
 
       // Check if split_id_categorys is more than 5
       if (split_id_categorys.length > 5) {
-        return res.status(400).json(responseFormatter.error(null, "You can only choose 5 categorys",res.statusCode));
+        res.status(400).json(responseFormatter.error(null, "You can only choose 5 categorys", res.statusCode));
+        return;
       }
 
       split_id_categorys.forEach(async (id_category) => {
-        await DetailProduct.create({
+        await Detail_Product.create({
           id_product: product.id,
           id_category: parseInt(id_category),
           createdAt: new Date(),
@@ -191,7 +198,7 @@ class ProductController {
         }
 
         // Push to database for this product
-        const product_gallery_new = await ProductGallery.bulkCreate(
+        const product_gallery_new = await Product_Gallery.bulkCreate(
           images.map((image) => ({
             url_photo: image,
             id_product: product.id,
@@ -205,7 +212,7 @@ class ProductController {
       if (images_deleted) {
         const images_deleted_array = images_deleted.split(",");
         images_deleted_array.forEach(async (id_image) => {
-          const image = await ProductGallery.findOne({
+          const image = await Product_Gallery.findOne({
             where: { id: id_image },
           });
 
@@ -215,184 +222,312 @@ class ProductController {
           }
         });
       }
-      return res.status(204).json(responseFormatter.success(product, "Product updated successfully",res.statusCode));
+
+      return res.status(204).json(responseFormatter.success(product, "Product updated successfully", res.statusCode));
     } catch (error) {
       console.log(error);
-      return res.status(500).json(responseFormatter.error(null, error.message,res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
-  }
+  };
 
-  // get product by id
-  static async getProductById(req, res) {
-    try {
-      const { id } = req.params;
-      const product = await Product.findOne({
-        where: { id },
-      });
-      if (!product) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
-      }
-      return res.status(200).json(responseFormatter.success(product, "Product found",res.statusCode));
-    } catch (error) {
-      return res.status(500).json(responseFormatter.error(null, error.message,res.statusCode)); 
-    }
-  }
   // get all product
-  static async getAllProduct(req, res) {
+  static getAllProduct = async (req, res) => {
     try {
       const products = await Product.findAll();
-      if (!products) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
-      }
-      return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
+
+      let result = await Promise.all(this.getProductDetails(products));
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
     } catch (error) {
-      return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
-  }
+  };
+
+  // get product by id
+  static getProductById = async (req, res) => {
+    try {
+      const product = await this.getProductFromRequest(req);
+
+      const detailProduct = await Detail_Product.findAll({
+        where: { id_product: product.id },
+      });
+
+      const categories = await Category.findAll({
+        where: { id: detailProduct.map((detail) => detail.id_category) },
+        attributes: ["name"],
+      });
+
+      const galleries = await Product_Gallery.findAll({
+        attributes: ["url_photo"],
+        where: {
+          id_product: product.id,
+        },
+      });
+
+      const seller = await User.findOne({
+        attributes: ["name", "city"],
+        where: {
+          id: product.id_user,
+        },
+      });
+
+      if (!product) {
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
+      }
+
+      return res.status(200).json(
+        responseFormatter.success(
+          {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            description: product.description,
+            status_product: product.status_product,
+            status_sell: product.status_sell,
+            categories,
+            galleries,
+            seller,
+            createdAt: product.createdAt,
+            updatedAt: product.updatedAt,
+          },
+          "Product found",
+          res.statusCode
+        )
+      );
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
 
   // get product by status_product
-  static async getProductByStatus(req, res) {
-      
+  static getProductByStatus = async (req, res) => {
     try {
-      const { id_user, status: status_product } = req.query;
+      const { status: status_product } = req.params;
+
       const products = await Product.findAll({
-        where: { 
-          id_user,
-          status_product 
+        where: {
+          id_user: req.user.id,
+          status_product,
         },
-        include: [{ model: ProductGallery }]
       });
 
-      if (!products) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
-      }
-      return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
+      let result = await Promise.all(this.getProductDetails(products));
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
     } catch (error) {
-      console.log(error);
-      return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
-  }
+  };
 
-  // update status_sell or status_product of product
-  static async updateStatus(req, res) {
-
+  // Update status product or status sell
+  static updateStatusProduct = async (req, res) => {
     try {
-      const { id } = req.params;
-      let { status_sell, status_product } = req.body;
-
-      // Check if status_sell or status_product is undefined
-      if (status_sell === undefined && status_product === undefined) {
-        return res.status(400).json(responseFormatter.error(null, "Status_sell or status_product is undefined",res.statusCode));
-      }
-
-      const product = await Product.findOne({
-        where: { id },
-      });
+      const product = await this.getProductFromRequest(req);
 
       if (!product) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
-      }
-
-      // Check if status_sell or status_product is not undefined
-      if (status_sell === undefined) {
-        status_sell = product.status_sell;
-      }
-
-      if (status_product === undefined) {
-        status_product = product.status_product;
-      }
-
-      // Check if user is owner of product
-      if (product.id_user !== req.user.id) {  
-        return res.status(403).send("You are not authorized to access this resource");
-      }
-
-
-      await product.update({
-        status_sell,
-        status_product,
-        updatedAt: new Date(),
-      });
-      return res.status(200).json(responseFormatter.success(product, "Product updated successfully",res.statusCode));
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
-    }
-  }
-
-  // delete product by id
-  static async deleteProduct(req, res) {
-    try {
-      const { id } = req.params;
-      const product = await Product.findOne({
-        where: { id },
-      });
-
-      if (!product) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
       }
 
       // Check if user is owner of product
       if (product.id_user !== req.user.id) {
-        return res.status(403).send("You are not authorized to access this resource");
+        res
+          .status(403)
+          .json(responseFormatter.error(null, "You are not authorized to access this resource", res.statusCode));
+        return;
       }
 
-      await product.destroy();
-      return res.status(200).json(responseFormatter.success(null, "Product deleted successfully",res.statusCode));
+      // if status product exist
+      if (req.body.status_product !== undefined) {
+        await Product.update(
+          {
+            status_product: req.body.status_product,
+            updatedAt: new Date(),
+          },
+          {
+            where: {
+              id: product.id,
+            },
+          }
+        );
+      }
 
+      // is status sell exist
+      if (req.body.status_sell !== undefined) {
+        await Product.update(
+          {
+            status_sell: req.body.status_sell,
+            updatedAt: new Date(),
+          },
+          {
+            where: {
+              id: product.id,
+            },
+          }
+        );
+      }
+
+      return res.status(200).json(responseFormatter.success(product, "Product updated successfully", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  // delete product by id
+  static deleteProduct = async (req, res) => {
+    try {
+      const product = await this.getProductFromRequest(req);
+
+      if (!product) {
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
+      }
+
+      // Check if user is owner of product
+      if (product.id_user !== req.user.id) {
+        res
+          .status(403)
+          .json(responseFormatter.error(null, "You are not authorized to access this resource", res.statusCode));
+        return;
+      }
+
+      await Product.destroy({
+        where: {
+          id: product.id,
+        },
+      });
+
+      return res.status(200).json(responseFormatter.success(product, "Product deleted successfully", res.statusCode));
     } catch (error) {
       console.log(error);
-      return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
-  }
-
+  };
 
   //////////////////////////////////////////////////// BUYER ////////////////////////////////////////////////////////
 
   // Search product by name
-  static async searchProductByName(req, res) {
+  static searchProductByName = async (req, res) => {
     try {
-      const { name } = req.params;
+      const { name } = req.query;
+
       const products = await Product.findAll({
-        where: { name: { [Op.iLike]: `%${name}%` } },
+        where: {
+          name: { [Op.iLike]: `%${name}%` },
+        },
       });
 
-      // Check if products is empty array
-      if (products.length === 0) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
-      }
-      return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
+      const result = await Promise.all(this.getProductDetails(products));
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
     } catch (error) {
-      console.log(error);
-      return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
-  }
+  };
 
   // Filter by category
-  static async filterByCategory(req, res) {
-
+  static filterByCategory = async (req, res) => {
     try {
-      const { categories } = req.params;
+      let categories = req.query.categories.toLowerCase();
 
-      const product_ids = await DetailProduct.findAll({
+      const product_categories = await Detail_Product.findAll({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+            where: {
+              slug: { [Op.in]: categories.split(",") },
+            },
+          },
+        ],
         attributes: ["id_product"],
-        where: { id_category: { [Op.in]: categories.split(",") } },
       });
 
       const products = await Product.findAll({
-        where: { id: { [Op.in]: product_ids.map((product) => product.id_product) } },
+        where: {
+          id: {
+            [Op.in]: product_categories.map((product) => product.id_product),
+          },
+        },
       });
 
-      if (products.length === 0) {
-        return res.status(404).json(responseFormatter.error(null, "Product not found",res.statusCode));
-      }
-      return res.status(200).json(responseFormatter.success(products, "Product found",res.statusCode));
+      const result = await Promise.all(this.getProductDetails(products))
 
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
     } catch (error) {
-      console.log(error);
-      return res.status(500).json(responseFormatter.error(null, "Internal server error",res.statusCode));
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
+  };
+
+  static getProductOffered = async (req, res) => {
+    try {
+      const productsUser = await Product.findAll({
+        where: {
+          id_user: req.user.id,
+        },
+      });
+
+      const offer = await Offer.findAll({
+        where: {
+          id_product: {
+            [Op.in]: productsUser.map((product) => product.id),
+          },
+        },
+      });
+
+      const products = await Product.findAll({
+        where: {
+          id: {
+            [Op.in]: offer.map((offer) => offer.id_product),
+          },
+        },
+      });
+
+      const result = await Promise.all(this.getProductDetails(products))
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static getProductFromRequest(req) {
+    return Product.findByPk(req.params.id);
   }
 
+  static getProductDetails(products) {
+    const data = products.map(async (product) => {
+      const galleries = await Product_Gallery.findAll({
+        where: { id_product: product.id },
+        attributes: ["url_photo"],
+      });
+
+      const product_detail = await Detail_Product.findAll({
+        where: { id_product: product.id },
+      });
+
+      const categories = await Category.findAll({
+        where: { id: product_detail.map((detail) => detail.id_category) },
+        attributes: ["name"],
+      });
+
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        description: product.description,
+        status_product: product.status_product,
+        status_sell: product.status_sell,
+        categories,
+        galleries,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      };
+    });
+
+    return data
+  }
 }
+
 module.exports = ProductController;
