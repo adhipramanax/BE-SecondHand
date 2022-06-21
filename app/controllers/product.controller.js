@@ -300,6 +300,59 @@ class ProductController {
     }
   };
 
+  // Search product by name
+  static searchProductByName = async (req, res) => {
+    try {
+      const { name } = req.query;
+
+      const products = await Product.findAll({
+        where: {
+          name: { [Op.iLike]: `%${name}%` },
+        },
+      });
+
+      const result = await Promise.all(this.getProductDetails(products));
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  // Filter by category
+  static filterByCategory = async (req, res) => {
+    try {
+      let categories = req.query.categories.toLowerCase();
+
+      const product_categories = await Detail_Product.findAll({
+        include: [
+          {
+            model: Category,
+            attributes: ["name"],
+            where: {
+              slug: { [Op.in]: categories.split(",") },
+            },
+          },
+        ],
+        attributes: ["id_product"],
+      });
+
+      const products = await Product.findAll({
+        where: {
+          id: {
+            [Op.in]: product_categories.map((product) => product.id_product),
+          },
+        },
+      });
+
+      const result = await Promise.all(this.getProductDetails(products))
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
   // get product by status_product
   static getProductByStatus = async (req, res) => {
     try {
@@ -315,6 +368,87 @@ class ProductController {
       let result = await Promise.all(this.getProductDetails(products));
 
       return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static getProductSold = async (req, res) => {
+    try {
+      const products = await Product.findAll({
+        where: {
+          id_user: req.user.id,
+          status_sell: true,
+        },
+      });
+
+      let result = await Promise.all(this.getProductDetails(products));
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  }
+
+  static getProductOffered = async (req, res) => {
+    try {
+      const productsUser = await Product.findAll({
+        where: {
+          id_user: req.user.id,
+        },
+      });
+
+      const offer = await Offer.findAll({
+        where: {
+          id_product: {
+            [Op.in]: productsUser.map((product) => product.id),
+          },
+        },
+      });
+
+      const products = await Product.findAll({
+        where: {
+          id: {
+            [Op.in]: offer.map((offer) => offer.id_product),
+          },
+          status_sell: false
+        },
+      });
+
+      const result = await Promise.all(this.getProductDetails(products))
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static getDetailProductOffered = async (req, res) => {
+    try {
+      const offer = await Offer.findAll({
+        where: {
+          id_user: req.params.id
+        },
+        include: [
+          {
+            model: User,
+            attributes: ['name', 'city']
+          },
+          {
+            model: Product,
+            where: {
+              status_sell: false
+            },
+            attributes: {exclude: ['id_user', 'createdAt', 'updatedAt']},
+            include: [{
+              model: Product_Gallery,
+              attributes: ['url_photo']
+            }]
+          }
+        ]
+      });
+
+      return res.status(200).json(responseFormatter.success(offer, "Product found", res.statusCode));
     } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
@@ -401,93 +535,6 @@ class ProductController {
       return res.status(200).json(responseFormatter.success(product, "Product deleted successfully", res.statusCode));
     } catch (error) {
       console.log(error);
-      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
-    }
-  };
-
-  //////////////////////////////////////////////////// BUYER ////////////////////////////////////////////////////////
-
-  // Search product by name
-  static searchProductByName = async (req, res) => {
-    try {
-      const { name } = req.query;
-
-      const products = await Product.findAll({
-        where: {
-          name: { [Op.iLike]: `%${name}%` },
-        },
-      });
-
-      const result = await Promise.all(this.getProductDetails(products));
-
-      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
-    } catch (error) {
-      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
-    }
-  };
-
-  // Filter by category
-  static filterByCategory = async (req, res) => {
-    try {
-      let categories = req.query.categories.toLowerCase();
-
-      const product_categories = await Detail_Product.findAll({
-        include: [
-          {
-            model: Category,
-            attributes: ["name"],
-            where: {
-              slug: { [Op.in]: categories.split(",") },
-            },
-          },
-        ],
-        attributes: ["id_product"],
-      });
-
-      const products = await Product.findAll({
-        where: {
-          id: {
-            [Op.in]: product_categories.map((product) => product.id_product),
-          },
-        },
-      });
-
-      const result = await Promise.all(this.getProductDetails(products))
-
-      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
-    } catch (error) {
-      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
-    }
-  };
-
-  static getProductOffered = async (req, res) => {
-    try {
-      const productsUser = await Product.findAll({
-        where: {
-          id_user: req.user.id,
-        },
-      });
-
-      const offer = await Offer.findAll({
-        where: {
-          id_product: {
-            [Op.in]: productsUser.map((product) => product.id),
-          },
-        },
-      });
-
-      const products = await Product.findAll({
-        where: {
-          id: {
-            [Op.in]: offer.map((offer) => offer.id_product),
-          },
-        },
-      });
-
-      const result = await Promise.all(this.getProductDetails(products))
-
-      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
-    } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
