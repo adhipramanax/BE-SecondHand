@@ -13,6 +13,7 @@ router.post('/auth/login', login, authenticationController.login);
 router.post('/auth/register', register, authenticationController.register);
 
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
+router.get('/offer/:id', [ authJWT ], offerController.showOfferProduct)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
 
 module.exports = router;

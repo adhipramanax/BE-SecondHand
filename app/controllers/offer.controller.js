@@ -1,11 +1,11 @@
 const { validationResult } = require('express-validator')
 
-const { Offer } = require('../models'); 
+const { Offer, User } = require('../models'); 
 const responseFormatter = require('../helpers/responseFormatter');
 const getUser = require('../helpers/getUser');
 
 class offerController{
-  static async offerUser(req, res){
+  static offerUser = async (req, res) => {
     try {
       const errors = validationResult(req);
 
@@ -15,8 +15,6 @@ class offerController{
       }
 
       const user = await getUser(req, res);
-
-      console.log(user)
       
       const offer = await Offer.create({
         offer_price: req.body.offer_price,
@@ -30,7 +28,7 @@ class offerController{
     }
   }
 
-  static async updateStatus(req, res){
+  static updateStatus = async (req, res) => {
     try {
       const offer = await Offer.update({
         offer_status: req.body.offer_status,
@@ -41,6 +39,26 @@ class offerController{
       })
 
       res.status(200).json(responseFormatter.success(offer, "Status penawaran berhasil diubah", res.statusCode));
+    } catch (error) {
+      res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
+    }
+  }
+
+  static showOfferProduct = async (req, res) => {
+    try {
+      const offer = await Offer.findAll({
+        where: {
+          id_product: req.params.id,
+        },
+      });
+
+      const user = await User.findAll({
+        where: {
+          id: offer.map(offers => offers.id_user),
+        },
+      });
+
+      res.status(200).json(responseFormatter.success(user, "Data penawaran berhasil ditampilkan", res.statusCode));
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
     }
