@@ -35,6 +35,7 @@ router.delete("/seller/product/:id", [ authJWT ], ProductController.deleteProduc
 
 // Management offer
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
+router.get('/offer/:id', [ authJWT ], offerController.showOfferProduct)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
 
 module.exports = router;
