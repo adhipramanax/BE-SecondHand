@@ -18,7 +18,7 @@ router.get("/product/filter", ProductController.filterByCategory);
 router.get("/product/:id", ProductController.getProductById);
 
 // Product by seller
-router.post("/seller/product", [authJWT, createProduct, upload.array('image')], ProductController.createProduct);
+router.post("/seller/product", [authJWT, upload.array('image')], ProductController.createProduct);
 router.get("/seller/product/sold", [ authJWT ], ProductController.getProductSold);
 router.get("/seller/product/offer", [ authJWT ], ProductController.getProductOffered);
 router.get("/seller/product/offer/:id", [ authJWT ], ProductController.getDetailProductOffered);

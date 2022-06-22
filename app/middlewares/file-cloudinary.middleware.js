@@ -12,13 +12,10 @@ const storage = multer.diskStorage({
 
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true)
   } else {
-    //reject file
-    cb({
-      message: 'Unsupported file format'
-    }, false)
+    cb(new Error('Format file tidak didukung'), false)
   }
 }
 
