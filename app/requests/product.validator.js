@@ -1,10 +1,12 @@
-const { check } = require('express-validator')
+const { body } = require('express-validator')
 
-module.exports = [
-  check('name')
-    .not().isEmpty().withMessage('Nama produk tidak boleh kosong'),
-  check('price')
-    .not().isEmpty().withMessage('Harga produk tidak boleh kosong'),
-  check('description')
-    .not().isEmpty().withMessage('Deskripsi produk tidak boleh kosong'),
-]
+module.exports ={ 
+  createProduct: [
+    body('name')
+      .not().isEmpty().withMessage('Nama produk tidak boleh kosong'),
+    body('price')
+      .not().isEmpty().withMessage('Harga produk tidak boleh kosong'),
+    body('description')
+      .not().isEmpty().withMessage('Deskripsi produk tidak boleh kosong'),
+  ]
+}

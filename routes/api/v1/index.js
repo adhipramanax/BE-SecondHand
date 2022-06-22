@@ -1,16 +1,11 @@
 const router = require("express").Router();
 
 // Import the controllers or other
-const { authJWT } = require('../../../app/middlewares')
+const { authJWT, upload } = require('../../../app/middlewares')
 const { register, login } = require('../../../app/requests/auth.validator')
-const productValidator  = require('../../../app/requests/product.validator')
+const { createProduct }  = require('../../../app/requests/product.validator')
 const { create } = require('../../../app/requests/offer.validator')
-const { authenticationController, ProductController, offerController } = require('../../../app/controllers')
-
-// Implement the routes here
-router.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+const { authenticationController, ProductController, offerController, categoryController } = require('../../../app/controllers')
 
 // Implement the routes here
 router.post('/auth/login', login, authenticationController.login);
@@ -23,7 +18,7 @@ router.get("/product/filter", ProductController.filterByCategory);
 router.get("/product/:id", ProductController.getProductById);
 
 // Product by seller
-router.post("/seller/product", [ authJWT, productValidator ], ProductController.createProduct);
+router.post("/seller/product", [authJWT, createProduct, upload.array('image')], ProductController.createProduct);
 router.get("/seller/product/sold", [ authJWT ], ProductController.getProductSold);
 router.get("/seller/product/offer", [ authJWT ], ProductController.getProductOffered);
 router.get("/seller/product/offer/:id", [ authJWT ], ProductController.getDetailProductOffered);
@@ -37,5 +32,7 @@ router.delete("/seller/product/:id", [ authJWT ], ProductController.deleteProduc
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
 router.get('/offer/:id', [ authJWT ], offerController.showOfferProduct)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
+
+router.get('/categories', categoryController.getAllCategory)
 
 module.exports = router;
