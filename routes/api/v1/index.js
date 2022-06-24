@@ -10,11 +10,11 @@ const profilController = require('../../../app/controllers/profile.controller');
 // Implement the routes here
 router.post('/auth/login', login, authenticationController.login);
 router.post('/auth/register', register, authenticationController.register);
+router.delete('/auth/logout', authenticationController.logout);
 
 
 
 // profil user 
-router.get('/profile', profilController.getAll);
 router.put('/profile/:id', profilController.updateuser);
 
 module.exports = router;
