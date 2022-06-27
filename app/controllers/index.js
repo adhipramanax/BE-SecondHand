@@ -5,7 +5,7 @@ const categoryController = require('./category.controller');
 
 module.exports = {
   authenticationController,
-  offerController,
   ProductController,
+  offerController,
   categoryController
 }

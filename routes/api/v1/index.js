@@ -27,12 +27,14 @@ router.put("/seller/product/:id", [ authJWT, upload.array('image') ], ProductCon
 router.put("/seller/product/status/:id", [ authJWT ], ProductController.updateStatusProduct);
 router.delete("/seller/product/:id", [ authJWT ], ProductController.deleteProduct);
 
-
 // Management offer
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
 router.get('/offer/:id', [ authJWT ], offerController.showOfferProduct)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
+router.get('/offer-history/:id', historyTransactionController.offerHistory)
 
+// Management Category
 router.get('/categories', categoryController.getAllCategory)
 
 module.exports = router;
+
