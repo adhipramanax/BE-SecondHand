@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {
           name: 'id_product'
         }
+      }),
+
+      this.belongsTo(models.User, {
+        foreignKey: {
+          name: 'id_user'
+        }
       })
     }
   }
