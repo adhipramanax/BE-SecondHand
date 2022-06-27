@@ -5,7 +5,7 @@ const { authJWT, upload } = require('../../../app/middlewares')
 const { register, login } = require('../../../app/requests/auth.validator')
 const { createProduct }  = require('../../../app/requests/product.validator')
 const { create } = require('../../../app/requests/offer.validator')
-const { authenticationController, ProductController, offerController, categoryController } = require('../../../app/controllers')
+const { authenticationController, ProductController, offerController, historyTransactionController, categoryController } = require('../../../app/controllers')
 
 // Implement the routes here
 router.post('/auth/login', login, authenticationController.login);
@@ -31,7 +31,7 @@ router.delete("/seller/product/:id", [ authJWT ], ProductController.deleteProduc
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
 router.get('/offer/:id', [ authJWT ], offerController.showOfferProduct)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
-router.get('/offer-history/:id', historyTransactionController.offerHistory)
+router.get('/offer/history/:id', historyTransactionController.offerHistory)
 
 // Management Category
 router.get('/categories', categoryController.getAllCategory)
