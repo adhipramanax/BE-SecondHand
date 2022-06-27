@@ -15,7 +15,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true)
   } else {
-    cb(new Error('Format file tidak didukung'), false)
+    cb(new Error('Format file tidak didukung, unggah file berupa jpg, jpeg atau png'), false)
   }
 }
 

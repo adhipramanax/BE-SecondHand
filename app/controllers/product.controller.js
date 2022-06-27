@@ -1,5 +1,4 @@
 const Sequelize = require("sequelize");
-const { validationResult } = require("express-validator");
 const fs = require("fs");
 const cloudinary = require("../config/cloudinary");
 const responseFormatter = require("../helpers/responseFormatter");
@@ -56,7 +55,7 @@ class ProductController {
       });
 
       // // Upload to Cloudinary
-      const uploader = async (path) => await cloudinary.uploads(path, 'Final');
+      const uploader = async (path) => await cloudinary.uploads(path, 'Final-Project/Product');
 
       const urls = []
 
@@ -87,7 +86,7 @@ class ProductController {
   // update product
   static updateProduct = async (req, res) => {
     try {
-      const { name, price, description, categories, images_deleted } = req.body;
+      const { name, price, description, categories } = req.body;
 
       // Find product by id and check if user is owner of product
       const product = await this.getProductFromRequest(req)
@@ -111,12 +110,12 @@ class ProductController {
         updatedAt: new Date(),
       });
 
-      // Get id categorys for this product and delete all
-      const id_categories = await Detail_Product.findAll({
+      // Get id category for this product and delete all
+      const detailProduct = await Detail_Product.findAll({
         where: { id_product: product.id },
       });
 
-      id_categories.forEach(async (id_category) => {
+      detailProduct.forEach(async (id_category) => {
         await id_category.destroy();
       });
 
@@ -138,48 +137,58 @@ class ProductController {
         });
       });
 
-      // Check if user upload new images
+      // Get all product gallery by id product      
+      const productGallery = await Product_Gallery.findAll({
+        where: {
+          id_product: product.id
+        }
+      })
+
+      // Delete image from cloudinary
+      productGallery.forEach(gallery => {
+        cloudinary.delete(gallery.public_id)
+      })
+
+      // Delete Image form database
+      productGallery.forEach(async gallery => {
+        await gallery.destroy()
+      })
+
       const urls = []
       const images = req.files;
 
-      if (images.length !== 0) {
-        const uploader = async (path) => await cloudinary.uploads(path, 'Final');
-
-        for (const image of images) {
-          const { path } = image;
-          const newPath = await uploader(path)
-          urls.push(newPath)
-          fs.unlinkSync(path)
-        }
-
-        // Push to database for this product
-        await Product_Gallery.bulkCreate(
-          urls.map((url) => ({
-            url_photo: url.url,
-            public_id: url.public_id,
-            id_product: product.id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          }))
-        );
+      if (images.length === 0) {
+        res.status(400).json(responseFormatter.error(null, "Unggah minimal satu gambar", res.statusCode));
+        return;
       }
 
-      // Delete images from database based on images_deleted
-      if (images_deleted) {
-        const images_deleted_array = images_deleted.split(",");
-        images_deleted_array.forEach(async (id_image) => {
-          const image = await Product_Gallery.findOne({
-            where: { id: id_image },
-          });
-
-          if (image && image.id_product === product.id) {
-            console.log(`Delete image ${image.id}`);
-            // await image.destroy();
-          }
-        });
+      if(images.length > 4){
+        res.status(400).json(responseFormatter.error(null, "Maksimal gambar yang di unggah 4", res.statusCode));
+        return;
       }
 
-      return res.status(204).json(responseFormatter.success(product, "Product updated successfully", res.statusCode));
+      // upload product gallery to cloudinary
+      const uploader = async (path) => await cloudinary.uploads(path, 'Final-Project/Product');
+
+      for (const image of images) {
+        const { path } = image;
+        const newPath = await uploader(path)
+        urls.push(newPath)
+        fs.unlinkSync(path)
+      }
+
+      // upload product gallery to database
+      await Product_Gallery.bulkCreate(
+        urls.map((url) => ({
+          url_photo: url.url,
+          public_id: url.public_id,
+          id_product: product.id,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }))
+      );
+
+      return res.status(200).json(responseFormatter.success(product, "Product updated successfully", res.statusCode));
     } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }

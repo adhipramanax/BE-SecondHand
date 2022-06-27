@@ -22,3 +22,7 @@ exports.uploads = (file, folder) => {
     })
   })
 }
+
+exports.delete = (public_id) => {
+  cloudinary.v2.uploader.destroy(public_id)
+}
