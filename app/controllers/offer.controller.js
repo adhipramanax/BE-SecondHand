@@ -1,8 +1,7 @@
 const { validationResult } = require('express-validator')
 
-const { Offer, User } = require('../models'); 
+const { Offer, History, User } = require('../models'); 
 const responseFormatter = require('../helpers/responseFormatter');
-const getUser = require('../helpers/getUser');
 
 class offerController{
   static offerUser = async (req, res) => {
@@ -13,13 +12,16 @@ class offerController{
         res.status(422).json(responseFormatter.error(null, errors.array(), res.statusCode));
         return;
       }
-
-      const user = await getUser(req, res);
       
       const offer = await Offer.create({
         offer_price: req.body.offer_price,
         id_product: req.body.id_product,
-        id_user: user.id,
+        id_user: req.user.id,
+      })
+
+      await History.create({
+        id_user: req.user.id,
+        id_offer: offer.id
       })
 
       res.status(201).json(responseFormatter.success(offer, "Harga tawarmu berhasil dikirim ke penjual", res.statusCode));
