@@ -18,11 +18,11 @@ router.get("/product/filter", ProductController.filterByCategory);
 router.get("/product/:id", ProductController.getProductById);
 
 // Product by seller
+router.get("/seller/product", [authJWT], ProductController.getProductSeller);
 router.post("/seller/product", [authJWT, upload.array("image")], ProductController.createProduct);
 router.get("/seller/product/sold", [authJWT], ProductController.getProductSold);
 router.get("/seller/product/offer", [authJWT], ProductController.getProductOffered);
 router.get("/seller/product/offer/:id", [authJWT], ProductController.getDetailProductOffered);
-router.get("/seller/product/:status", [authJWT], ProductController.getProductByStatus);
 router.put("/seller/product/:id", [authJWT, upload.array("image")], ProductController.updateProduct);
 router.put("/seller/product/status/:id", [authJWT], ProductController.updateStatusProduct);
 router.delete("/seller/product/:id", [authJWT], ProductController.deleteProduct);
@@ -31,9 +31,9 @@ router.delete("/seller/product/:id", [authJWT], ProductController.deleteProduct)
 router.post("/offer", [authJWT, create], offerController.offerUser);
 router.get("/offer/:id", [authJWT], offerController.showOfferProduct);
 router.put("/offer/:id", [authJWT], offerController.updateStatus);
-router.get("/offer-history/:id", historyTransactionController.offerHistory);
+router.get("/offer/history/:id", [authJWT], historyTransactionController.offerHistory);
 
 // Management Category
-router.get("/categories", categoryController.getAllCategory);
+router.get("/categories", [authJWT], categoryController.getAllCategory);
 
 module.exports = router;
