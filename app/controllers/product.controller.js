@@ -318,14 +318,12 @@ class ProductController {
   };
 
   // get product by status_product
-  static getProductByStatus = async (req, res) => {
+  static getProductSeller = async (req, res) => {
     try {
-      const { status: status_product } = req.params;
-
       const products = await Product.findAll({
         where: {
           id_user: req.user.id,
-          status_product,
+          status_sell: false,
         },
       });
 
