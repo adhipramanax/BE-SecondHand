@@ -3,6 +3,7 @@ const ProductController = require("./product.controller");
 const offerController = require("./offer.controller");
 const categoryController = require("./category.controller");
 const historyTransactionController = require("./historyTransaction.controller");
+const WishlistController = require("./wishlist.controller");
 
 module.exports = {
   authenticationController,
@@ -10,4 +11,5 @@ module.exports = {
   offerController,
   categoryController,
   historyTransactionController,
+  WishlistController
 };
