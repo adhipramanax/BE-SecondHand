@@ -15,6 +15,6 @@ router.post('/auth/register', register, authenticationController.register);
 router.post('/offer', [ authJWT, create ], offerController.offerUser)
 router.put('/offer/:id', [ authJWT ], offerController.updateStatus)
 
-router.get('/offer-history/:id', historyTransactionController.offerHistory)
+router.get('/offer/history', historyTransactionController.offerHistory)
 
 module.exports = router;

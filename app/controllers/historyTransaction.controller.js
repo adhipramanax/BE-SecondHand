@@ -8,7 +8,7 @@ class historyTransactionController{
       const histories = await History.findAll({
         attributes: ['id'],
         where: {
-          id_user: req.params.id
+          id_user: req.user.id
         },
         include: [{
           model: Offer,
