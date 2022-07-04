@@ -28,10 +28,10 @@ router.put("/seller/product/status/:id", [authJWT], ProductController.updateStat
 router.delete("/seller/product/:id", [authJWT], ProductController.deleteProduct);
 
 // Management offer
+router.get("/offer/history", [authJWT], historyTransactionController.offerHistory);
 router.post("/offer", [authJWT, create], offerController.offerUser);
 router.get("/offer/:id", [authJWT], offerController.showOfferProduct);
 router.put("/offer/:id", [authJWT], offerController.updateStatus);
-router.get("/offer/history/:id", [authJWT], historyTransactionController.offerHistory);
 
 // Management Category
 router.get("/categories", [authJWT], categoryController.getAllCategory);
