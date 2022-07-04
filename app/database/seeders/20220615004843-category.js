@@ -1,5 +1,7 @@
 'use strict';
 
+const converToSlug = require("../../helpers/conversToSlug");
+
 const names = [
   "Hobi",
   "Kendaraan",
@@ -14,6 +16,7 @@ module.exports = {
 
     const categories = names.map((name) => ({
       name,
+      slug: converToSlug(name),
       createdAt: timestamp,
       updatedAt: timestamp,
     }))
