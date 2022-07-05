@@ -6,14 +6,9 @@ const responseFormatter = require('../helpers/responseFormatter')
 
 // get all user use class
 class profilController {
-
   static async findUser(req, res) {
     try {
-      const user = await User.findByPk(req.user.id, {
-        attributes: {
-          exclude: ['password']
-        }
-      })
+      const user = await User.findByPk(req.user.id)
 
       if (!user) {
         res.status(404).json(responseFormatter.error(null, 'User tidak ditemukan!', res.statusCode))
