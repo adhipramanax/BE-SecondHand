@@ -11,6 +11,9 @@ module.exports = {
       url_photo: {
         type: Sequelize.STRING
       },
+      public_id:{
+        type: Sequelize.STRING
+      },
       id_product: {
         type: Sequelize.INTEGER
       },

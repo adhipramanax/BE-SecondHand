@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: {
           name: 'id'
         }
+      }),
+
+      this.hasMany(models.Offer, {
+        foreignKey: {
+          name: 'id'
+        }
       })
     }
   }

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
           name: 'id_offer'
         }
       })
-    }
+    } 
   }
   History.init({
     id_user: DataTypes.INTEGER,
