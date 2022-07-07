@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       }),
 
-      this.hasMany(models.Whislist, {
+      this.hasMany(models.Whistlist, {
         foreignKey: {
           name: 'id'
         }

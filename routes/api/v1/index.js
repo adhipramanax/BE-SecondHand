@@ -37,6 +37,6 @@ router.get("/offer/history/:id", [authJWT], historyTransactionController.offerHi
 router.get("/categories", [authJWT], categoryController.getAllCategory);
 
 //Wishlist
-router.get("/wishlist/:id", WishlistController.getAllWishlist);
-router.post("/wishlist/:id", WishlistController.createWishlist);
+router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);
+router.post("/wishlist", [authJWT], WishlistController.createWishlist);
 module.exports = router;

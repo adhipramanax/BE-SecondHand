@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
     id_product: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Whislist',
+    modelName: 'Whistlist',
   });
   return Whistlist;
 };
