@@ -5,7 +5,11 @@ const { authJWT, upload } = require("../../../app/middlewares");
 const { register, login } = require("../../../app/requests/auth.validator");
 const { createProduct } = require("../../../app/requests/product.validator");
 const { create } = require("../../../app/requests/offer.validator");
+<<<<<<< HEAD
 const { authenticationController, ProductController, offerController, categoryController, historyTransactionController, profilController } = require("../../../app/controllers");
+=======
+const { authenticationController, ProductController, offerController, categoryController, historyTransactionController, WishlistController } = require("../../../app/controllers");
+>>>>>>> 3f79c95a3346bd4a4c05ab8a2e0b02022717138f
 
 // Implement the routes here
 router.post("/auth/login", login, authenticationController.login);
@@ -40,4 +44,7 @@ router.put('/profile/:id', [authJWT, upload.single('image')], profilController.u
 // Management Category
 router.get("/categories", [authJWT], categoryController.getAllCategory);
 
+//Wishlist
+router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);
+router.post("/wishlist", [authJWT], WishlistController.createWishlist);
 module.exports = router;
