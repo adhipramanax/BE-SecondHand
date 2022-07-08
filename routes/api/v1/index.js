@@ -37,8 +37,8 @@ router.post('/offer', [authJWT, create], offerController.offerUser)
 router.put('/offer/:id', [authJWT], offerController.updateStatus)
 
 //Management user
-router.get('/profile', [authJWT], profilController.findUser)
-router.put('/profile/:id', [authJWT, upload.single("image")], profilController.update)
+router.get('/profile/', [authJWT], profilController.findUser)
+router.put('/profile/:id', [authJWT, upload.single('image')], profilController.update)
 
 // Management Category
 router.get("/categories", [authJWT], categoryController.getAllCategory);
