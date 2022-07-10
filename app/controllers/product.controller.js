@@ -229,7 +229,7 @@ class ProductController {
       });
 
       const seller = await User.findOne({
-        attributes: ["name", "city"],
+        attributes: ["name", "city", "url_photo"],
         where: {
           id: product.id_user,
         },
@@ -394,7 +394,7 @@ class ProductController {
         include: [
           {
             model: User,
-            attributes: ['name', 'city']
+            attributes: ['name', 'city', 'url_photo']
           },
           {
             model: Product,
