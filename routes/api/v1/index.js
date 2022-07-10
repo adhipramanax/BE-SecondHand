@@ -33,9 +33,6 @@ router.post("/offer", [authJWT, create], offerController.offerUser);
 router.get("/offer/:id", [authJWT], offerController.showOfferProduct);
 router.put("/offer/:id", [authJWT], offerController.updateStatus);
 
-router.post('/offer', [authJWT, create], offerController.offerUser)
-router.put('/offer/:id', [authJWT], offerController.updateStatus)
-
 //Management user
 router.get('/profile/', [authJWT], profilController.findUser)
 router.put('/profile/:id', [authJWT, upload.single('image')], profilController.update)
