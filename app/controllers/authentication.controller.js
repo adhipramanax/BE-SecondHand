@@ -18,12 +18,13 @@ class authenticationController {
       const { name, password } = req.body;
       const email = req.body.email.toLowerCase();
       const salt = process.env.SALT;
-      const encryptedPassword = await bcrypt.hash(salt + password, 10);
+      const encryptedPassword = await bcrypt.hash(password + salt, 10);
 
       const user = await User.findOne({ where: { email } })
 
       if (user) {
         res.status(422).json(responseFormatter.error(null, 'Email sudah terdaftar!', res.statusCode))
+        return;
       }
 
       const newUser = await User.create({
@@ -56,12 +57,14 @@ class authenticationController {
 
       if (!user) {
         res.status(404).json(responseFormatter.error(null, 'User tidak ditemukan!', res.statusCode))
+        return
       }
 
-      const isMatch = await bcrypt.compare(salt + password, user.password)
+      const isMatch = await bcrypt.compare(password + salt, user.password)
 
       if (!isMatch) {
         res.status(403).json(responseFormatter.error(null, 'Email dan Password tidak cocok!', res.statusCode))
+        return;
       }
 
       const token = jwt.sign(
