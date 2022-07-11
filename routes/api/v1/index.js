@@ -41,7 +41,7 @@ router.put('/profile/:id', [authJWT, upload.single('image')], profilController.u
 router.get("/categories", [authJWT], categoryController.getAllCategory);
 
 // profil user 
-router.put('/profile/:id', profilController.updateuser);
+router.put('/profile/:id', profilController.update);
 
 //Wishlist
 router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);

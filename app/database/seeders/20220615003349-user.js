@@ -16,7 +16,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     const password = "123456";
     const salt = process.env.SALT;
-    const encryptedPassword = bcrypt.hashSync(salt + password, 10);
+    const encryptedPassword = bcrypt.hashSync(password + salt, 10);
     const timestamp = new Date();
 
     const users = names.map((name) => ({
