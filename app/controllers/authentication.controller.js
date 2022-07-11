@@ -79,14 +79,11 @@ class authenticationController {
         },
         process.env.JWT_SIGNATURE_KEY)
 
-      return res.status(200).json({
-        token,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email
-        }
-      }, "Authenticated", res.statusCode)
+      return res.status(200).json(responseFormatter.success({token, user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      }}, 'Authenticated', res.statusCode))
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
     }
