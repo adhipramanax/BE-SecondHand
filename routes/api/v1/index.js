@@ -40,7 +40,11 @@ router.put('/profile/:id', [authJWT, upload.single('image')], profilController.u
 // Management Category
 router.get("/categories", [authJWT], categoryController.getAllCategory);
 
+// profil user 
+router.put('/profile/:id', profilController.updateuser);
+
 //Wishlist
 router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);
 router.post("/wishlist", [authJWT], WishlistController.createWishlist);
+
 module.exports = router;
