@@ -14,14 +14,6 @@ module.exports = {
                 updatedAt: timestamp,
             },
             {
-                offer_price: 200000,
-                offer_status: null,
-                id_user: 1,
-                id_product: 1,
-                createdAt: timestamp,
-                updatedAt: timestamp,
-            },
-            {
                 offer_price: 150000,
                 offer_status: null,
                 id_user: 2,
