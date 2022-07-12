@@ -38,8 +38,10 @@ class profilController {
 
       if(image) {
         // Delete image from cloudinary
-        const public_id = user.url_photo.split('/').pop();
-        cloudinary.delete(`Final-Project/Profile/${public_id.split('.')[0]}`)
+        if(user.url_photo !== null){
+          const public_id = user.url_photo.split('/').pop();
+          cloudinary.delete(`Final-Project/Profile/${public_id.split('.')[0]}`)
+        }
 
         // upload profile gallery to cloudinary
         const uploader = async (path) => await cloudinary.uploads(path, 'Final-Project/Profile');

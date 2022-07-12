@@ -38,7 +38,7 @@ router.get('/profile/', [authJWT], profilController.findUser)
 router.put('/profile/:id', [authJWT, upload.single('image')], profilController.update)
 
 // Management Category
-router.get("/categories", [authJWT], categoryController.getAllCategory);
+router.get("/categories", categoryController.getAllCategory);
 
 // profil user 
 router.put('/profile/:id', profilController.update);

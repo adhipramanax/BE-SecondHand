@@ -389,7 +389,8 @@ class ProductController {
     try {
       const offer = await Offer.findAll({
         where: {
-          id_user: req.params.id
+          id_user: req.user.id,
+          id_product: req.params.id
         },
         include: [
           {
