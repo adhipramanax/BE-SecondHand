@@ -197,7 +197,11 @@ class ProductController {
   // get all product
   static getAllProduct = async (req, res) => {
     try {
-      const products = await Product.findAll();
+      const products = await Product.findAll({
+        where: {
+          status_product: true,
+        },
+      });
 
       let result = await Promise.all(this.getProductDetails(products));
 
@@ -389,7 +393,6 @@ class ProductController {
     try {
       const offer = await Offer.findAll({
         where: {
-          id_user: req.user.id,
           id_product: req.params.id
         },
         include: [
@@ -400,6 +403,7 @@ class ProductController {
           {
             model: Product,
             where: {
+              id_user: req.user.id,
               status_sell: false
             },
             attributes: {exclude: ['id_user', 'createdAt', 'updatedAt']},
