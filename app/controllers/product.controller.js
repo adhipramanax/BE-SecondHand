@@ -210,6 +210,7 @@ class ProductController {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
+  
 
   // get product by id
   static getProductById = async (req, res) => {
