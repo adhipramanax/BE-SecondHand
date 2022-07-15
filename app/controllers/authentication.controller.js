@@ -154,3 +154,4 @@ class authenticationController {
 }
 
 module.exports = authenticationController;
+
