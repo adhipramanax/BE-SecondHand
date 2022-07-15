@@ -28,6 +28,7 @@ router.get("/seller/product/offer/:id", [authJWT], ProductController.getDetailPr
 router.put("/seller/product/:id", [authJWT, upload.array("image")], ProductController.updateProduct);
 router.put("/seller/product/status/:id", [authJWT], ProductController.updateStatusProduct);
 router.delete("/seller/product/:id", [authJWT], ProductController.deleteProduct);
+router.put("/seller/product/restore/:id", [authJWT], ProductController.restoreProduct);
 
 // Management offer
 router.get("/offer/history", [authJWT], historyTransactionController.offerHistory);

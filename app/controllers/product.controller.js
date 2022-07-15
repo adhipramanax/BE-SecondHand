@@ -200,6 +200,7 @@ class ProductController {
       const products = await Product.findAll({
         where: {
           status_product: true,
+          status_sell: false,
           deletedAt: null
         },
       });
@@ -507,8 +508,6 @@ class ProductController {
     try {
       const product = await this.getProductFromRequest(req);
 
-      console.log(product);
-
       if (!product) {
         res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
         return;
@@ -548,7 +547,55 @@ class ProductController {
 
       return res.status(200).json(responseFormatter.success(product, "Product deleted successfully", res.statusCode));
     } catch (error) {
-      console.log(error);
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static restoreProduct = async (req, res) => {
+    try {
+      const { data } = req.body;
+
+      const product = await this.getProductFromRequest(req);
+
+      if (!product) {
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
+      }
+
+      // Check if user is owner of product
+      if (product.id_user !== req.user.id) {
+        res
+          .status(403)
+          .json(responseFormatter.error(null, "You are not authorized to access this resource", res.statusCode));
+        return;
+      }
+
+      await Product.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Detail_Product.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Product_Gallery.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      return res.status(200).json(responseFormatter.success(product, "Product restored successfully", res.statusCode));
+    } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
