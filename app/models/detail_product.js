@@ -26,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Detail_Product.init({
     id_product: DataTypes.INTEGER,
-    id_category: DataTypes.INTEGER
+    id_category: DataTypes.INTEGER,
+    deletedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Detail_Product',

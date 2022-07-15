@@ -21,7 +21,8 @@ module.exports = (sequelize, DataTypes) => {
   Product_Gallery.init({
     url_photo: DataTypes.STRING,
     public_id: DataTypes.STRING,
-    id_product: DataTypes.INTEGER
+    id_product: DataTypes.INTEGER,
+    deletedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Product_Gallery',

@@ -10,6 +10,7 @@ const { authenticationController, ProductController, offerController, categoryCo
 // Implement the routes here
 router.post("/auth/login", login, authenticationController.login);
 router.post("/auth/register", register, authenticationController.register);
+router.post("/auth/google", register, authenticationController.Googlelogin);
 
 // Management Product
 router.get("/product", ProductController.getAllProduct);
@@ -19,6 +20,7 @@ router.get("/product/:id", ProductController.getProductById);
 
 // Product by seller
 router.get("/seller/product", [authJWT], ProductController.getProductSeller);
+router.get("/seller/product/trash", [authJWT], ProductController.getSellerProductInTrash);
 router.post("/seller/product", [authJWT, upload.array("image")], ProductController.createProduct);
 router.get("/seller/product/sold", [authJWT], ProductController.getProductSold);
 router.get("/seller/product/offer", [authJWT], ProductController.getProductOffered);
