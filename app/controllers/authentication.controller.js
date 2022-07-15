@@ -98,6 +98,60 @@ class authenticationController {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   }
+
+  static async Googlelogin(req, res) {
+    try {
+      const { name, email } = req.body;
+      const clearEmail = email.toLowerCase();
+      const salt = process.env.SALT;
+      const encryptedPassword = await bcrypt.hash("123456" + salt, 10);
+
+      let user = await User.findOne({ where: { email: clearEmail } });
+
+      if (!user) {
+        user = await User.create({
+          name,
+          email,
+          password: encryptedPassword,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        res.status(201).json(responseFormatter.success(user, "User berhasil ditambahkan!", res.statusCode));
+      }
+
+      const token = jwt.sign(
+        {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          city: user.city,
+          address: user.address,
+          phone_number: user.phone_number,
+          url_photo: user.url_photo,
+        },
+        process.env.JWT_SIGNATURE_KEY
+      );
+
+      return res.status(200).json(
+        responseFormatter.success(
+          {
+            token,
+            user: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+            },
+          },
+          "Authenticated",
+          res.statusCode
+        )
+      );
+    } catch (error) {
+      res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  }
 }
 
 module.exports = authenticationController;
+
