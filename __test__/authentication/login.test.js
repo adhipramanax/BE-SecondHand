@@ -3,22 +3,22 @@ const request = require('supertest');
 const app = require('../../app')
 jest.setTimeout(100000)
 
-describe('Login (/auth/login)', () => {
-    it('jika status respon code 201', () => {
+describe('Login (/api/v1/auth/login)', () => {
+    it('jika status respon code 200', () => {
         return request(app)
-            .post('/auth/login')
+            .post('/api/v1/auth/login')
             .send({
                 email: 'panji@binar.co.id',
                 password: '123456'
             })
             .then(res => {
-                expect(res.status).toBe(201)
+                expect(res.status).toBe(200)
             })
     });
 
     it('jika status respon code 404', () => {
         return request(app)
-            .post('/auth/login')
+            .post('/api/v1/auth/login')
             .send({
                 name: 'bari',
                 email: 'bari@binar.co.id',
@@ -29,16 +29,16 @@ describe('Login (/auth/login)', () => {
             })
     });
 
-    it('jika status respon code 401', () => {
+    it('jika status respon code 403', () => {
         return request(app)
-            .post('/auth/login')
+            .post('/api/v1/auth/login')
             .send({
                 name: 'panji ',
                 email: 'panji@binar.co.id',
                 password: '1434'
             })
             .then(res => {
-                expect(res.status).toBe(401)
+                expect(res.status).toBe(403)
             })
     });
 })
