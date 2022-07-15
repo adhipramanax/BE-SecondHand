@@ -1,5 +1,5 @@
-const responseFormatter = require('./responseFormatter')
+const responseFormatter = require('./responseFormatter');
 
 module.exports = {
-  responseFormatter
+  responseFormatter,
 }

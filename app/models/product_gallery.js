@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Product_Gallery.init({
     url_photo: DataTypes.STRING,
+    public_id: DataTypes.STRING,
     id_product: DataTypes.INTEGER
   }, {
     sequelize,
