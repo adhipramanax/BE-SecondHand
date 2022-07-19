@@ -25,10 +25,11 @@ router.post("/seller/product", [authJWT, upload.array("image")], ProductControll
 router.get("/seller/product/sold", [authJWT], ProductController.getProductSold);
 router.get("/seller/product/offer", [authJWT], ProductController.getProductOffered);
 router.get("/seller/product/offer/:id", [authJWT], ProductController.getDetailProductOffered);
-router.put("/seller/product/:id", [authJWT, upload.array("image")], ProductController.updateProduct);
+router.put("/seller/product/:id", [authJWT], ProductController.updateProduct);
 router.put("/seller/product/status/:id", [authJWT], ProductController.updateStatusProduct);
 router.delete("/seller/product/:id", [authJWT], ProductController.deleteProduct);
 router.put("/seller/product/restore/:id", [authJWT], ProductController.restoreProduct);
+router.put("/seller/product/gallery/:id", [authJWT, upload.single("image")], ProductController.updateGalleryProduct);
 
 // Management offer
 router.get("/offer/history", [authJWT], historyTransactionController.offerHistory);
