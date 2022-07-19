@@ -197,7 +197,13 @@ class ProductController {
   // get all product
   static getAllProduct = async (req, res) => {
     try {
-      const products = await Product.findAll();
+      const products = await Product.findAll({
+        where: {
+          status_product: true,
+          status_sell: false,
+          deletedAt: null
+        },
+      });
 
       let result = await Promise.all(this.getProductDetails(products));
 
@@ -206,6 +212,7 @@ class ProductController {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
+  
 
   // get product by id
   static getProductById = async (req, res) => {
@@ -272,6 +279,8 @@ class ProductController {
       const products = await Product.findAll({
         where: {
           name: { [Op.iLike]: `%${name}%` },
+          status_product: true,
+          deletedAt: null
         },
       });
 
@@ -306,6 +315,8 @@ class ProductController {
           id: {
             [Op.in]: product_categories.map((product) => product.id_product),
           },
+          status_product: true,
+          deletedAt: null
         },
       });
 
@@ -324,6 +335,26 @@ class ProductController {
         where: {
           id_user: req.user.id,
           status_sell: false,
+          deletedAt: null
+        },
+      });
+
+      let result = await Promise.all(this.getProductDetails(products));
+
+      return res.status(200).json(responseFormatter.success(result, "Product found", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static getSellerProductInTrash = async (req, res) => {
+    try {
+      const products = await Product.findAll({
+        where: {
+          id_user: req.user.id,
+          deletedAt: {
+            [Op.ne]: null
+          }
         },
       });
 
@@ -341,6 +372,7 @@ class ProductController {
         where: {
           id_user: req.user.id,
           status_sell: true,
+          deletedAt: null
         },
       });
 
@@ -389,7 +421,6 @@ class ProductController {
     try {
       const offer = await Offer.findAll({
         where: {
-          id_user: req.user.id,
           id_product: req.params.id
         },
         include: [
@@ -400,6 +431,7 @@ class ProductController {
           {
             model: Product,
             where: {
+              id_user: req.user.id,
               status_sell: false
             },
             attributes: {exclude: ['id_user', 'createdAt', 'updatedAt']},
@@ -489,15 +521,81 @@ class ProductController {
         return;
       }
 
-      await Product.destroy({
-        where: {
-          id: product.id,
-        },
+      await Product.update({
+        deletedAt: new Date()
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Detail_Product.update({
+        deletedAt: new Date()
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Product_Gallery.update({
+        deletedAt: new Date()
+      },{
+        where:{
+          id: product.id
+        }
       });
 
       return res.status(200).json(responseFormatter.success(product, "Product deleted successfully", res.statusCode));
     } catch (error) {
-      console.log(error);
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static restoreProduct = async (req, res) => {
+    try {
+      const { data } = req.body;
+
+      const product = await this.getProductFromRequest(req);
+
+      if (!product) {
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
+      }
+
+      // Check if user is owner of product
+      if (product.id_user !== req.user.id) {
+        res
+          .status(403)
+          .json(responseFormatter.error(null, "You are not authorized to access this resource", res.statusCode));
+        return;
+      }
+
+      await Product.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Detail_Product.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Product_Gallery.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      return res.status(200).json(responseFormatter.success(product, "Product restored successfully", res.statusCode));
+    } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };

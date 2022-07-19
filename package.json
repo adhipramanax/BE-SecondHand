@@ -2,6 +2,8 @@
   "name": "backend-second-hand",
   "version": "0.0.0",
   "private": true,
+  "author": "Team 4",
+  "license": "ISC",
   "scripts": {
     "start": "node ./bin/www",
     "develop": "nodemon ./bin/www",
@@ -10,6 +12,14 @@
     "db:seed": "sequelize db:seed:all",
     "swagger:generate": "node ./docs/swagger.js",
     "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/adhipramanax/dev-be-secondhand-2.git"
+  },
+  "engines": {
+    "node": "16.13.0",
+    "npm": "8.10.0"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -22,6 +32,7 @@
     "express": "~4.16.1",
     "express-fileupload": "^1.4.0",
     "express-validator": "^6.14.1",
+    "form-data": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "morgan": "~1.9.1",

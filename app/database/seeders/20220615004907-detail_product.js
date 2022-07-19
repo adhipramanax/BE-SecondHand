@@ -53,6 +53,30 @@ module.exports = {
         createdAt: timestamp,
         updatedAt: timestamp
       },
+      {
+        id_product: 3,
+        id_category: 1,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      },
+      {
+        id_product: 3,
+        id_category: 2,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      },
+      {
+        id_product: 4,
+        id_category: 3,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      },
+      {
+        id_product: 4,
+        id_category: 4,
+        createdAt: timestamp,
+        updatedAt: timestamp
+      },
     ])
   },
 

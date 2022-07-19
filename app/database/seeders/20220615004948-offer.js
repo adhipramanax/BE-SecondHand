@@ -13,22 +13,6 @@ module.exports = {
                 createdAt: timestamp,
                 updatedAt: timestamp,
             },
-            {
-                offer_price: 150000,
-                offer_status: null,
-                id_user: 2,
-                id_product: 2,
-                createdAt: timestamp,
-                updatedAt: timestamp,
-            },
-            {
-                offer_price: 200000,
-                offer_status: null,
-                id_user: 3,
-                id_product: 2,
-                createdAt: timestamp,
-                updatedAt: timestamp,
-            },
         ]);
     },
 

@@ -42,7 +42,8 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.TEXT,
     status_product: DataTypes.BOOLEAN,
     status_sell: DataTypes.BOOLEAN,
-    id_user: DataTypes.INTEGER
+    id_user: DataTypes.INTEGER,
+    deletedAt: DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Product',
