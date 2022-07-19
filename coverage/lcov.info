@@ -31,7 +31,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\config\cloudinary.js
+SF:app/config/cloudinary.js
 FN:12,Object.<anonymous>.exports.uploads
 FN:26,Object.<anonymous>.exports.delete
 FNF:2
@@ -72,7 +72,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\config\config.js
+SF:app/config/config.js
 FNF:0
 FNH:0
 DA:1,1
@@ -124,7 +124,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\controllers\authentication.controller.js
+SF:app/controllers/authentication.controller.js
 FN:10,register
 FN:44,login
 FN:102,Googlelogin
@@ -300,7 +300,7 @@ BRF:5
 BRH:1
 end_of_record
 TN:
-SF:app\controllers\category.controller.js
+SF:app/controllers/category.controller.js
 FN:5,<static_initializer>
 FN:5,getAllCategory
 FNF:2
@@ -330,7 +330,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:app\controllers\historyTransaction.controller.js
+SF:app/controllers/historyTransaction.controller.js
 FN:5,offerHistory
 FNF:1
 FNH:0
@@ -450,7 +450,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\controllers\index.js
+SF:app/controllers/index.js
 FNF:0
 FNH:0
 DA:1,1
@@ -476,7 +476,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\controllers\offer.controller.js
+SF:app/controllers/offer.controller.js
 FN:7,<static_initializer>
 FN:7,offerUser
 FN:33,updateStatus
@@ -564,7 +564,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:app\controllers\product.controller.js
+SF:app/controllers/product.controller.js
 FN:10,<static_initializer>
 FN:10,createProduct
 FN:87,updateProduct
@@ -1274,7 +1274,7 @@ BRF:26
 BRH:18
 end_of_record
 TN:
-SF:app\controllers\profile.controller.js
+SF:app/controllers/profile.controller.js
 FN:9,findUser
 FN:23,update
 FN:48,uploader
@@ -1383,7 +1383,7 @@ BRF:9
 BRH:5
 end_of_record
 TN:
-SF:app\controllers\wishlist.controller.js
+SF:app/controllers/wishlist.controller.js
 FN:7,getAllWishlist
 FN:53,createWishlist
 FNF:2
@@ -1478,7 +1478,7 @@ BRF:3
 BRH:2
 end_of_record
 TN:
-SF:app\helpers\responseFormatter.js
+SF:app/helpers/responseFormatter.js
 FN:2,<static_initializer>
 FN:11,success
 FN:20,error
@@ -1526,7 +1526,7 @@ BRF:3
 BRH:3
 end_of_record
 TN:
-SF:app\middlewares\authJWT.js
+SF:app/middlewares/authJWT.js
 FN:4,authJWT
 FNF:1
 FNH:1
@@ -1566,7 +1566,7 @@ BRF:4
 BRH:2
 end_of_record
 TN:
-SF:app\middlewares\file-cloudinary.middleware.js
+SF:app/middlewares/file-cloudinary.middleware.js
 FN:5,destination
 FN:8,filename
 FN:14,fileFilter
@@ -1611,7 +1611,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\middlewares\file.middleware.js
+SF:app/middlewares/file.middleware.js
 FN:3,validateFile
 FNF:1
 FNH:0
@@ -1640,7 +1640,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\middlewares\index.js
+SF:app/middlewares/index.js
 FNF:0
 FNH:0
 DA:1,1
@@ -1658,7 +1658,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\models\category.js
+SF:app/models/category.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -1702,7 +1702,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\detail_product.js
+SF:app/models/detail_product.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -1753,7 +1753,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\history.js
+SF:app/models/history.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -1803,7 +1803,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\index.js
+SF:app/models/index.js
 FNF:0
 FNH:0
 DA:1,1
@@ -1855,7 +1855,7 @@ BRF:6
 BRH:4
 end_of_record
 TN:
-SF:app\models\offer.js
+SF:app/models/offer.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -1913,7 +1913,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\product.js
+SF:app/models/product.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -1980,7 +1980,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\product_gallery.js
+SF:app/models/product_gallery.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -2026,7 +2026,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\user.js
+SF:app/models/user.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -2087,7 +2087,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\models\whistlist.js
+SF:app/models/whistlist.js
 FN:5,Object.<anonymous>.module.exports
 FN:12,associate
 FNF:2
@@ -2137,7 +2137,7 @@ BRF:2
 BRH:2
 end_of_record
 TN:
-SF:app\requests\auth.validator.js
+SF:app/requests/auth.validator.js
 FNF:0
 FNH:0
 DA:1,1
@@ -2178,7 +2178,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\requests\offer.validator.js
+SF:app/requests/offer.validator.js
 FNF:0
 FNH:0
 DA:1,1
@@ -2195,7 +2195,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:app\requests\product.validator.js
+SF:app/requests/product.validator.js
 FNF:0
 FNH:0
 DA:1,1
@@ -2216,7 +2216,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:routes\index.js
+SF:routes/index.js
 FNF:0
 FNH:0
 DA:1,1
@@ -2231,7 +2231,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:routes\api\v1\index.js
+SF:routes/api/v1/index.js
 FNF:0
 FNH:0
 DA:1,1
