@@ -30,6 +30,7 @@ class profilController {
 
       if (!user) {
         res.status(404).json(responseFormatter.error(null, 'User tidak ditemukan!', res.statusCode))
+        return
       }
       
       let url = '';
