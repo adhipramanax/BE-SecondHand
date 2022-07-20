@@ -370,6 +370,7 @@ class ProductController {
 
   static getDetailProductOffered = async (req, res) => {
     try {
+      console.log(req.query.id);
       const offer = await Offer.findAll({
         where: {
           id_product: req.params.id
