@@ -3,7 +3,6 @@ const router = require("express").Router();
 // Import the controllers or other
 const { authJWT, upload } = require("../../../app/middlewares");
 const { register, login } = require("../../../app/requests/auth.validator");
-const { createProduct } = require("../../../app/requests/product.validator");
 const { create } = require("../../../app/requests/offer.validator");
 const { authenticationController, ProductController, offerController, categoryController, historyTransactionController, profilController, WishlistController } = require("../../../app/controllers");
 
@@ -48,7 +47,7 @@ router.get("/categories", categoryController.getAllCategory);
 router.put('/profile/:id', profilController.update);
 
 //Wishlist
-router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);
 router.post("/wishlist", [authJWT], WishlistController.createWishlist);
+router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);
 
 module.exports = router;

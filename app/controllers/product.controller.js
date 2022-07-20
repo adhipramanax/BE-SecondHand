@@ -178,7 +178,7 @@ class ProductController {
       });
 
       const galleries = await Product_Gallery.findAll({
-        attributes: ["id", "url_photo"],
+        attributes: ["id","url_photo"],
         where: {
           id_product: product.id,
         },
@@ -379,7 +379,7 @@ class ProductController {
           {
             model: User,
             where: {
-              id: req.query.user
+              id: req.query.user,
             },
             attributes: ['name', 'city', 'url_photo']
           },
@@ -598,6 +598,7 @@ class ProductController {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
+
 
   static getProductFromRequest(req) {
     return Product.findByPk(req.params.id);
