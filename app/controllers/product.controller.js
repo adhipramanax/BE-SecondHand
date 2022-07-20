@@ -137,57 +137,6 @@ class ProductController {
         });
       });
 
-      // Get all product gallery by id product      
-      const productGallery = await Product_Gallery.findAll({
-        where: {
-          id_product: product.id
-        }
-      })
-
-      // Delete image from cloudinary
-      productGallery.forEach(gallery => {
-        cloudinary.delete(gallery.public_id)
-      })
-
-      // Delete Image form database
-      productGallery.forEach(async gallery => {
-        await gallery.destroy()
-      })
-
-      const urls = []
-      const images = req.files;
-
-      if (images.length === 0) {
-        res.status(400).json(responseFormatter.error(null, "Unggah minimal satu gambar", res.statusCode));
-        return;
-      }
-
-      if(images.length > 4){
-        res.status(400).json(responseFormatter.error(null, "Maksimal gambar yang di unggah 4", res.statusCode));
-        return;
-      }
-
-      // upload product gallery to cloudinary
-      const uploader = async (path) => await cloudinary.uploads(path, 'Final-Project/Product');
-
-      for (const image of images) {
-        const { path } = image;
-        const newPath = await uploader(path)
-        urls.push(newPath)
-        fs.unlinkSync(path)
-      }
-
-      // upload product gallery to database
-      await Product_Gallery.bulkCreate(
-        urls.map((url) => ({
-          url_photo: url.url,
-          public_id: url.public_id,
-          id_product: product.id,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }))
-      );
-
       return res.status(200).json(responseFormatter.success(product, "Product updated successfully", res.statusCode));
     } catch (error) {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
@@ -200,6 +149,7 @@ class ProductController {
       const products = await Product.findAll({
         where: {
           status_product: true,
+          status_sell: false,
           deletedAt: null
         },
       });
@@ -211,6 +161,7 @@ class ProductController {
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
+  
 
   // get product by id
   static getProductById = async (req, res) => {
@@ -223,11 +174,11 @@ class ProductController {
 
       const categories = await Category.findAll({
         where: { id: detailProduct.map((detail) => detail.id_category) },
-        attributes: ["name"],
+        attributes: ["id", "name"],
       });
 
       const galleries = await Product_Gallery.findAll({
-        attributes: ["url_photo"],
+        attributes: ["id","url_photo"],
         where: {
           id_product: product.id,
         },
@@ -278,6 +229,7 @@ class ProductController {
         where: {
           name: { [Op.iLike]: `%${name}%` },
           status_product: true,
+          status_sell: false,
           deletedAt: null
         },
       });
@@ -314,6 +266,7 @@ class ProductController {
             [Op.in]: product_categories.map((product) => product.id_product),
           },
           status_product: true,
+          status_sell: false,
           deletedAt: null
         },
       });
@@ -417,6 +370,7 @@ class ProductController {
 
   static getDetailProductOffered = async (req, res) => {
     try {
+      console.log(req.query.id);
       const offer = await Offer.findAll({
         where: {
           id_product: req.params.id
@@ -424,12 +378,14 @@ class ProductController {
         include: [
           {
             model: User,
+            where: {
+              id: req.query.user,
+            },
             attributes: ['name', 'city', 'url_photo']
           },
           {
             model: Product,
             where: {
-              id_user: req.user.id,
               status_sell: false
             },
             attributes: {exclude: ['id_user', 'createdAt', 'updatedAt']},
@@ -506,8 +462,6 @@ class ProductController {
     try {
       const product = await this.getProductFromRequest(req);
 
-      console.log(product);
-
       if (!product) {
         res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
         return;
@@ -547,10 +501,104 @@ class ProductController {
 
       return res.status(200).json(responseFormatter.success(product, "Product deleted successfully", res.statusCode));
     } catch (error) {
-      console.log(error);
       return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }
   };
+
+  static restoreProduct = async (req, res) => {
+    try {
+      const { data } = req.body;
+
+      const product = await this.getProductFromRequest(req);
+
+      if (!product) {
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
+      }
+
+      // Check if user is owner of product
+      if (product.id_user !== req.user.id) {
+        res
+          .status(403)
+          .json(responseFormatter.error(null, "You are not authorized to access this resource", res.statusCode));
+        return;
+      }
+
+      await Product.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Detail_Product.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      await Product_Gallery.update({
+        deletedAt: data
+      },{
+        where:{
+          id: product.id
+        }
+      });
+
+      return res.status(200).json(responseFormatter.success(product, "Product restored successfully", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
+  static updateGalleryProduct = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const image = req.file;
+      let url;
+
+      const gallery = await Product_Gallery.findOne({
+        where: {
+          id,
+        }
+      });
+
+      if (!gallery) {
+        res.status(404).json(responseFormatter.error(null, "Product not found", res.statusCode));
+        return;
+      }
+
+      // Delete gallery from cloudinary
+      cloudinary.delete(gallery.public_id)
+
+      // upload product gallery to cloudinary
+      const uploader = async (path) => await cloudinary.uploads(path, 'Final-Project/Product');
+
+      const { path } = image;
+      const newPath = await uploader(path)
+      url = newPath.url
+      fs.unlinkSync(path)
+      const public_id = url.split('/').pop();
+
+      await Product_Gallery.update({
+        url_photo: url,
+        public_id: `Final-Project/Product/${public_id.split('.')[0]}`,
+        updatedAt: new Date()
+      },{
+        where:{
+          id
+        }
+      });
+
+      return res.status(200).json(responseFormatter.success(gallery, "Successfully updated gallery product", res.statusCode));
+    } catch (error) {
+      return res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
+    }
+  };
+
 
   static getProductFromRequest(req) {
     return Product.findByPk(req.params.id);

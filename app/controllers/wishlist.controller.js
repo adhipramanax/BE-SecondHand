@@ -69,7 +69,7 @@ class WishlistController {
         id_product,
       });
 
-      res.status(200).json(responseFormatter.success(data, "Wishlist created", res.statusCode));
+      res.status(201).json(responseFormatter.success(data, "Wishlist created", res.statusCode));
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode));
     }

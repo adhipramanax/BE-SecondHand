@@ -1,4 +1,3 @@
-const { User } = require('../models')
 const { check } = require('express-validator')
 
 module.exports = {
@@ -8,14 +7,7 @@ module.exports = {
     check('email')
       .not().isEmpty().withMessage('Email tidak boleh kosong')
       .bail()
-      .isEmail().withMessage('Email tidak valid')
-      .bail()
-      .custom(async (value) => {
-        const user = await User.findOne({ where: { email: value } })
-        if (user) {
-          throw new Error('Email sudah terdaftar')
-        }
-      }),
+      .isEmail().withMessage('Email tidak valid'),
     check('password')
       .not().isEmpty().withMessage('Password tidak boleh kosong')
       .bail()
