@@ -3,7 +3,7 @@ const request = require("supertest");
 const app = require("../../../app");
 jest.setTimeout(100000);
 
-describe("POST /api/v1/offer", () => {
+describe("PUT /api/v1/offer", () => {
   let accessToken;
   let offer;
 

@@ -23,7 +23,7 @@ class authenticationController {
       const user = await User.findOne({ where: { email } });
 
       if (user) {
-        res.status(422).json(responseFormatter.error(null, "Email sudah terdaftar!", res.statusCode));
+        res.status(501).json(responseFormatter.error(null, "Email sudah terdaftar!", res.statusCode));
         return;
       }
 
@@ -88,6 +88,10 @@ class authenticationController {
               id: user.id,
               name: user.name,
               email: user.email,
+              city: user.city,
+              address: user.address,
+              phone_number: user.phone_number,
+              url_photo: user.url_photo,
             },
           },
           "Authenticated",
@@ -116,8 +120,6 @@ class authenticationController {
           createdAt: new Date(),
           updatedAt: new Date(),
         });
-
-        res.status(201).json(responseFormatter.success(user, "User berhasil ditambahkan!", res.statusCode));
       }
 
       const token = jwt.sign(
@@ -141,6 +143,10 @@ class authenticationController {
               id: user.id,
               name: user.name,
               email: user.email,
+              city: user.city,
+              address: user.address,
+              phone_number: user.phone_number,
+              url_photo: user.url_photo,
             },
           },
           "Authenticated",

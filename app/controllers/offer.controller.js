@@ -12,6 +12,13 @@ class offerController{
         res.status(422).json(responseFormatter.error(null, errors.array(), res.statusCode));
         return;
       }
+
+      const user = await User.findByPk(req.user.id);
+
+      if(user.city === null || user.address === null || user.phone_number === null || user.url_photo === null){
+        res.status(501).json(responseFormatter.error(null, "Lengkapi profile anda", res.statusCode));
+        return;
+      }
       
       const offer = await Offer.create({
         offer_price: req.body.offer_price,
