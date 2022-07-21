@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator')
 
 const { Offer, History, User } = require('../models'); 
 const responseFormatter = require('../helpers/responseFormatter');
+const { Sequelize } = require('sequelize');
 
 class offerController{
   static offerUser = async (req, res) => {
@@ -58,16 +59,32 @@ class offerController{
       const offer = await Offer.findAll({
         where: {
           id_product: req.params.id,
+          offer_status: null
         },
+        attributes: ['id_user', [Sequelize.fn("max", Sequelize.col("id")), "id"]],
+        group: ['id_user'],
       });
 
-      const user = await User.findAll({
+      const users = await User.findAll({
         where: {
-          id: offer.map(offers => offers.id_user),
+          id: offer.map(item => item.id_user),
         },
+        attributes: ['id', 'name', 'email', 'city', 'address', 'phone_number', 'url_photo'],
       });
 
-      res.status(200).json(responseFormatter.success(user, "Data penawaran berhasil ditampilkan", res.statusCode));
+      const result = users.map(async (user) => {
+        return {
+          ...user.dataValues,
+          latestOfferPrice: await Offer.findOne({
+            where: {
+              id: offer.find(item => item.id_user === user.id).id,
+            },
+            attributes: ['offer_price'],
+          }),
+        }
+      })
+
+      res.status(200).json(responseFormatter.success(await Promise.all(result), "Data penawaran berhasil ditampilkan", res.statusCode));
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
     }
