@@ -1,8 +1,9 @@
 const { validationResult } = require('express-validator')
 
-const { Offer, History, User } = require('../models'); 
+const { Offer, History, User, Product, notification } = require('../models'); 
 const responseFormatter = require('../helpers/responseFormatter');
 const { Sequelize } = require('sequelize');
+const { io } = require("../../bin/socket");
 
 class offerController{
   static offerUser = async (req, res) => {
@@ -30,6 +31,22 @@ class offerController{
       await History.create({
         id_user: req.user.id,
         id_offer: offer.id
+      })
+
+      await notification.create({
+        id_user: req.user.id,
+        id_product: req.body.id_product,
+        isRead: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+
+      const product = await Product.findByPk(req.body.id_product);
+
+      io.emit(product.id_user.toString(), {
+        id_product: req.body.id_product,
+        id_user: req.user.id,
+        message: "Penawaran produk"
       })
 
       res.status(201).json(responseFormatter.success(offer, "Harga tawarmu berhasil dikirim ke penjual", res.statusCode));
