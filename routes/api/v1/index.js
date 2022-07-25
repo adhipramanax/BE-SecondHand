@@ -4,7 +4,7 @@ const router = require("express").Router();
 const { authJWT, upload } = require("../../../app/middlewares");
 const { register, login } = require("../../../app/requests/auth.validator");
 const { create } = require("../../../app/requests/offer.validator");
-const { authenticationController, ProductController, offerController, categoryController, historyTransactionController, profilController, WishlistController } = require("../../../app/controllers");
+const { authenticationController, ProductController, offerController, categoryController, historyTransactionController, profilController, WishlistController, NotificationController } = require("../../../app/controllers");
 
 // Implement the routes here
 router.post("/auth/login", login, authenticationController.login);
@@ -49,5 +49,7 @@ router.put('/profile/:id', profilController.update);
 //Wishlist
 router.post("/wishlist", [authJWT], WishlistController.createWishlist);
 router.get("/wishlist", [authJWT], WishlistController.getAllWishlist);
+
+router.get("/notification", [authJWT], NotificationController.getAllNotification);
 
 module.exports = router;

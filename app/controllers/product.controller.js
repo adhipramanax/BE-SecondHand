@@ -146,13 +146,28 @@ class ProductController {
   // get all product
   static getAllProduct = async (req, res) => {
     try {
-      const products = await Product.findAll({
-        where: {
-          status_product: true,
-          status_sell: false,
-          deletedAt: null
-        },
-      });
+      let products;
+
+      if(!req.query.user){
+        products = await Product.findAll({
+          where: {
+            status_product: true,
+            status_sell: false,
+            deletedAt: null
+          },
+        });
+      }else{
+        products = await Product.findAll({
+          where: {
+            status_product: true,
+            status_sell: false,
+            deletedAt: null,
+            id_user: {
+              [Op.ne]: req.query.user
+            }
+          },
+        });
+      }
 
       let result = await Promise.all(this.getProductDetails(products));
 
@@ -348,6 +363,7 @@ class ProductController {
           id_product: {
             [Op.in]: productsUser.map((product) => product.id),
           },
+          offer_status: null
         },
       });
 
@@ -370,7 +386,6 @@ class ProductController {
 
   static getDetailProductOffered = async (req, res) => {
     try {
-      console.log(req.query.id);
       const offer = await Offer.findAll({
         where: {
           id_product: req.params.id
@@ -381,7 +396,7 @@ class ProductController {
             where: {
               id: req.query.user,
             },
-            attributes: ['name', 'city', 'url_photo']
+            attributes: ['name', 'address', 'city', 'phone_number', 'url_photo']
           },
           {
             model: Product,

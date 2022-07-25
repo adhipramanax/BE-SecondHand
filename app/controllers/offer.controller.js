@@ -33,20 +33,24 @@ class offerController{
         id_offer: offer.id
       })
 
-      await notification.create({
-        id_user: req.user.id,
-        id_product: req.body.id_product,
-        isRead: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      })
-
       const product = await Product.findByPk(req.body.id_product);
 
       io.emit(product.id_user.toString(), {
+        id_offer: offer.id,
         id_product: req.body.id_product,
         id_user: req.user.id,
-        message: "Penawaran produk"
+        target: product.id_user
+      })
+
+      await notification.create({
+        id_offer: offer.id,
+        id_user: req.user.id,
+        id_product: req.body.id_product,
+        target: product.id_user,
+        message: "Penawaran produk",
+        isRead: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
       })
 
       res.status(201).json(responseFormatter.success(offer, "Harga tawarmu berhasil dikirim ke penjual", res.statusCode));
@@ -65,6 +69,39 @@ class offerController{
         }
       })
 
+      const offerUser = await Offer.findByPk(req.params.id);
+  
+      io.emit(offerUser.id_user.toString(), {
+        id_offer: offerUser.id,
+        id_product: offerUser.id_product,
+        id_user: req.user.id,
+        target: offerUser.id,
+      })
+
+      if(req.body.offer_status){
+        await notification.create({
+          id_offer: offerUser.id,
+          id_user: req.user.id,
+          id_product: offerUser.id_product,
+          target: offerUser.id_user,
+          message: "Penawaran diterima",
+          isRead: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      }else{
+        await notification.create({
+          id_offer: offerUser.id,
+          id_user: req.user.id,
+          id_product: offerUser.id_product,
+          target: offerUser.id_user,
+          message: "Penawaran ditolak",
+          isRead: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+      }
+      
       res.status(200).json(responseFormatter.success(offer, "Status penawaran berhasil diubah", res.statusCode));
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
