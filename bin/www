@@ -7,6 +7,8 @@ require("dotenv").config();
 
 var app = require("../app");
 var debug = require("debug")("backend-second-hand:server");
+var socketApi = require('./socket');
+var io = socketApi.io;
 var http = require("http");
 
 /**
@@ -21,6 +23,12 @@ app.set("port", port);
  */
 
 var server = http.createServer(app);
+io.attach(server, {
+  cors:{
+    origin:"*"
+  }
+});
+
 
 /**
  * Listen on provided port, on all network interfaces.

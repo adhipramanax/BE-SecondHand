@@ -1,7 +1,9 @@
 const { validationResult } = require('express-validator')
 
-const { Offer, History, User } = require('../models'); 
+const { Offer, History, User, Product, notification } = require('../models'); 
 const responseFormatter = require('../helpers/responseFormatter');
+const { Sequelize } = require('sequelize');
+const { io } = require("../../bin/socket");
 
 class offerController{
   static offerUser = async (req, res) => {
@@ -31,6 +33,22 @@ class offerController{
         id_offer: offer.id
       })
 
+      await notification.create({
+        id_user: req.user.id,
+        id_product: req.body.id_product,
+        isRead: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+
+      const product = await Product.findByPk(req.body.id_product);
+
+      io.emit(product.id_user.toString(), {
+        id_product: req.body.id_product,
+        id_user: req.user.id,
+        message: "Penawaran produk"
+      })
+
       res.status(201).json(responseFormatter.success(offer, "Harga tawarmu berhasil dikirim ke penjual", res.statusCode));
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
@@ -58,16 +76,32 @@ class offerController{
       const offer = await Offer.findAll({
         where: {
           id_product: req.params.id,
+          offer_status: null
         },
+        attributes: ['id_user', [Sequelize.fn("max", Sequelize.col("id")), "id"]],
+        group: ['id_user'],
       });
 
-      const user = await User.findAll({
+      const users = await User.findAll({
         where: {
-          id: offer.map(offers => offers.id_user),
+          id: offer.map(item => item.id_user),
         },
+        attributes: ['id', 'name', 'email', 'city', 'address', 'phone_number', 'url_photo'],
       });
 
-      res.status(200).json(responseFormatter.success(user, "Data penawaran berhasil ditampilkan", res.statusCode));
+      const result = users.map(async (user) => {
+        return {
+          ...user.dataValues,
+          latestOfferPrice: await Offer.findOne({
+            where: {
+              id: offer.find(item => item.id_user === user.id).id,
+            },
+            attributes: ['offer_price'],
+          }),
+        }
+      })
+
+      res.status(200).json(responseFormatter.success(await Promise.all(result), "Data penawaran berhasil ditampilkan", res.statusCode));
     } catch (error) {
       res.status(500).json(responseFormatter.error(null, error.message, res.statusCode))
     }
