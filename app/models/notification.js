@@ -14,8 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   notification.init({
+    id_offer: DataTypes.INTEGER,
     id_user: DataTypes.INTEGER,
     id_product: DataTypes.INTEGER,
+    target: DataTypes.INTEGER,
     message: DataTypes.TEXT,
     isRead: DataTypes.BOOLEAN
   }, {

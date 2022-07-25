@@ -8,10 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      id_offer: {
+        type: Sequelize.INTEGER
+      },
       id_user: {
         type: Sequelize.INTEGER
       },
       id_product: {
+        type: Sequelize.INTEGER
+      },
+      target: {
         type: Sequelize.INTEGER
       },
       message: {

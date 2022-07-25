@@ -5,6 +5,7 @@ const categoryController = require("./category.controller");
 const historyTransactionController = require("./historyTransaction.controller");
 const profilController = require("./profile.controller");
 const WishlistController = require("./wishlist.controller");
+const NotificationController = require("./notification.controller");
 
 module.exports = {
   authenticationController,
@@ -13,5 +14,6 @@ module.exports = {
   categoryController,
   historyTransactionController,
   profilController,
-  WishlistController
+  WishlistController,
+  NotificationController
 };
